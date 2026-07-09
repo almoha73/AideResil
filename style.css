@@ -749,20 +749,47 @@ body {
 
 .contract-fields-container .form-group,
 #group-date-elec,
-#group-date-gaz {
+#group-date-gaz,
+#group-keep-active {
     transition: var(--transition);
-    max-height: 200px;
+    max-height: 300px;
+    opacity: 1;
+    overflow: hidden;
+}
+
+#group-elec-meter {
+    transition: var(--transition);
+    max-height: 1200px;
     opacity: 1;
     overflow: hidden;
 }
 
 .contract-fields-container .form-group.hide,
 #group-date-elec.hide,
-#group-date-gaz.hide {
+#group-date-gaz.hide,
+#group-keep-active.hide,
+#group-elec-meter.hide {
     max-height: 0;
     opacity: 0;
-    margin-bottom: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
     pointer-events: none;
+}
+
+#group-elec-reading.hide,
+#group-elec-reading-inputs.hide,
+#wrapper-reading-base.hide,
+#wrapper-reading-hp.hide,
+#wrapper-reading-hc.hide,
+#wrapper-reading-hph.hide,
+#wrapper-reading-hpb.hide,
+#wrapper-reading-hch.hide,
+#wrapper-reading-hcb.hide {
+    display: none !important;
 }
 
 /* Custom visual feedback when copying (success animations) */

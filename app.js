@@ -15,6 +15,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const keepActiveOther = document.getElementById('keep-active-other');
     const keepActiveLabel = document.getElementById('keep-active-label');
 
+    // Meter elements
+    const meterNonCommunicating = document.getElementById('meter-non-communicating');
+    const groupElecMeter = document.getElementById('group-elec-meter');
+    const groupElecReading = document.getElementById('group-elec-reading');
+    const elecReadingProvided = document.getElementById('elec-reading-provided');
+    const groupElecReadingInputs = document.getElementById('group-elec-reading-inputs');
+
+    // Individual inputs
+    const readingBaseVal = document.getElementById('reading-base-val');
+    const readingHpVal = document.getElementById('reading-hp-val');
+    const readingHcVal = document.getElementById('reading-hc-val');
+    const readingHphVal = document.getElementById('reading-hph-val');
+    const readingHpbVal = document.getElementById('reading-hpb-val');
+    const readingHchVal = document.getElementById('reading-hch-val');
+    const readingHcbVal = document.getElementById('reading-hcb-val');
+
+    // Wrappers
+    const wrapperReadingBase = document.getElementById('wrapper-reading-base');
+    const wrapperReadingHp = document.getElementById('wrapper-reading-hp');
+    const wrapperReadingHc = document.getElementById('wrapper-reading-hc');
+    const wrapperReadingHph = document.getElementById('wrapper-reading-hph');
+    const wrapperReadingHpb = document.getElementById('wrapper-reading-hpb');
+    const wrapperReadingHch = document.getElementById('wrapper-reading-hch');
+    const wrapperReadingHcb = document.getElementById('wrapper-reading-hcb');
+
     // Output elements
     const rulesBanner = document.getElementById('rules-banner');
     const rulesTitle = document.getElementById('rules-title');
@@ -234,6 +259,77 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdlElec = contractElecInput.value.trim() || '[PDL]';
         const pceGaz = contractGazInput.value.trim() || '[PCE]';
 
+        const isNonCommunicating = meterNonCommunicating.checked;
+        const indexProvided = elecReadingProvided.checked;
+
+        function getElecReadingPhrase() {
+            if (!isNonCommunicating || !indexProvided) {
+                return "sur la base de la relève de compteur que vous nous avez transmise";
+            }
+            const meterType = document.querySelector('input[name="elec-meter-type"]:checked').value;
+            const option = document.querySelector('input[name="elec-reading-option"]:checked').value;
+
+            if (meterType === 'linky') {
+                const valHph = readingHphVal.value.trim() || '[Index HPH]';
+                const valHpb = readingHpbVal.value.trim() || '[Index HPB]';
+                const valHch = readingHchVal.value.trim() || '[Index HCH]';
+                const valHcb = readingHcbVal.value.trim() || '[Index HCB]';
+
+                if (option === 'base') {
+                    const valBase = readingBaseVal.value.trim() || '[Index Base]';
+                    return `sur la base des relèves que vous nous avez transmises (Index Base : ${valBase} kWh, HPH : ${valHph} kWh, HPB : ${valHpb} kWh, HCH : ${valHch} kWh, HCB : ${valHcb} kWh)`;
+                } else {
+                    const valHp = readingHpVal.value.trim() || '[Index HP]';
+                    const valHc = readingHcVal.value.trim() || '[Index HC]';
+                    return `sur la base des relèves que vous nous avez transmises (Index HP : ${valHp} kWh, HC : ${valHc} kWh, HPH : ${valHph} kWh, HPB : ${valHpb} kWh, HCH : ${valHch} kWh, HCB : ${valHcb} kWh)`;
+                }
+            } else {
+                if (option === 'base') {
+                    const valBase = readingBaseVal.value.trim() || '[Index Base]';
+                    return `sur la base de la relève que vous nous avez transmise (Index Base : ${valBase} kWh)`;
+                } else {
+                    const valHp = readingHpVal.value.trim() || '[Index Heures Pleines]';
+                    const valHc = readingHcVal.value.trim() || '[Index Heures Creuses]';
+                    return `sur la base des relèves que vous nous avez transmises (Index Heures Pleines : ${valHp} kWh, Heures Creuses : ${valHc} kWh)`;
+                }
+            }
+        }
+
+        function getElecReadingRequestPhrase(mode, dateSuffix = "à cette date") {
+            const meterType = document.querySelector('input[name="elec-meter-type"]:checked').value;
+            const option = document.querySelector('input[name="elec-reading-option"]:checked').value;
+
+            if (meterType === 'linky') {
+                if (option === 'base') {
+                    if (mode === 'subjunctive') {
+                        return `sous réserve que vous nous transmettiez votre relève de compteur (l'index Base ainsi que les index de programmation locale HPH, HPB, HCH et HCB de votre compteur Linky non-communicant) ${dateSuffix}`;
+                    } else { // reminder
+                        return `Pour rappel, votre compteur d'électricité étant un compteur Linky non-communicant, la transmission de votre relève (l'index Base ainsi que les index de programmation locale HPH, HPB, HCH et HCB) sera nécessaire le jour de la résiliation.`;
+                    }
+                } else { // hphc
+                    if (mode === 'subjunctive') {
+                        return `sous réserve que vous nous transmettiez vos relèves de compteur (les index Heures Pleines et Heures Creuses, ainsi que les index de programmation locale HPH, HPB, HCH et HCB de votre compteur Linky non-communicant) ${dateSuffix}`;
+                    } else { // reminder
+                        return `Pour rappel, votre compteur d'électricité étant un compteur Linky non-communicant, la transmission de vos relèves (les index Heures Pleines et Heures Creuses, ainsi que les index de programmation locale HPH, HPB, HCH et HCB) sera nécessaire le jour de la résiliation.`;
+                    }
+                }
+            } else { // ancien
+                if (option === 'base') {
+                    if (mode === 'subjunctive') {
+                        return `sous réserve que vous nous transmettiez votre relève de compteur (l'index de consommation Base de votre ancien compteur) ${dateSuffix}`;
+                    } else { // reminder
+                        return `Pour rappel, votre compteur d'électricité étant un ancien compteur, la transmission de votre relève (l'index de consommation Base) sera nécessaire le jour de la résiliation.`;
+                    }
+                } else { // hphc
+                    if (mode === 'subjunctive') {
+                        return `sous réserve que vous nous transmettiez vos relèves de compteur (les index Heures Pleines et Heures Creuses de votre ancien compteur) ${dateSuffix}`;
+                    } else { // reminder
+                        return `Pour rappel, votre compteur d'électricité étant un ancien compteur, la transmission de vos relèves (les index Heures Pleines et Heures Creuses) sera nécessaire le jour de la résiliation.`;
+                    }
+                }
+            }
+        }
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -267,21 +363,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 emailSubject = "Confirmation de la résiliation de votre contrat d'électricité";
 
-                if (isToday || isFuture) {
-                    const dateStr = formatLongFrenchDate(requestedDate);
-                    rulesAppliedText = `Date future ou égale au jour même (${formatLongFrenchDate(requestedDate)}). Résiliation confirmée le jour demandé.`;
-                    rulesStatusClass = 'status-success';
+                if (isNonCommunicating) {
+                    const readingPhrase = getElecReadingPhrase();
+                    if (isPast) {
+                        const todayStr = formatLongFrenchDate(today);
+                        rulesStatusClass = 'status-warning';
+                        if (indexProvided) {
+                            rulesAppliedText = `Compteur non communicant avec relève. Date passée (${formatLongFrenchDate(requestedDate)}) reprogrammée au jour même soit le ${todayStr}.`;
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        } else {
+                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                            rulesAppliedText = `Compteur non communicant sans relève. Date passée reprogrammée au jour même sous réserve de relève.`;
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, ${reqPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        }
+                    } else if (isToday) {
+                        const dateStr = formatLongFrenchDate(requestedDate);
+                        rulesStatusClass = 'status-success';
+                        if (indexProvided) {
+                            rulesAppliedText = `Compteur non communicant avec relève. Résiliation ce jour le ${dateStr}.`;
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        } else {
+                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                            rulesAppliedText = `Compteur non communicant sans relève. Résiliation ce jour sous réserve de relève.`;
+                            emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, ${reqPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        }
+                    } else { // isFuture
+                        const dateStr = formatLongFrenchDate(requestedDate);
+                        const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                        rulesAppliedText = `Compteur non communicant. Date future (${dateStr}). Résiliation le jour demandé sous réserve de relève.`;
+                        rulesStatusClass = 'status-success';
 
-                    const datePhrase = isToday ? `ce jour, le ${dateStr}` : `le ${dateStr}`;
+                        let readingNotice = '';
+                        if (indexProvided) {
+                            readingNotice = `\n- nous ne pouvons pas prendre en compte la relève que vous nous avez transmise car celle ci évoluera d'ici là`;
+                        }
 
-                    emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ${datePhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nVotre compteur étant non communicant, nous vous informons que nous résilierons votre contrat le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                    }
                 } else {
-                    // Requested date is in the past
-                    const todayStr = formatLongFrenchDate(today);
-                    rulesAppliedText = `Date demandée dans le passé (${formatLongFrenchDate(requestedDate)}). Résiliation impossible dans le passé, reprogrammée le jour même soit le ${todayStr}.`;
-                    rulesStatusClass = 'status-warning';
+                    if (isToday || isFuture) {
+                        const dateStr = formatLongFrenchDate(requestedDate);
+                        rulesAppliedText = `Date future ou égale au jour même (${formatLongFrenchDate(requestedDate)}). Résiliation confirmée le jour demandé.`;
+                        rulesStatusClass = 'status-success';
 
-                    emailBody = `Nous vous confirmons la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, nous vous informons qu'il n'est pas possible de résilier un contrat de manière rétroactive. Par conséquent, nous avons procédé à la résiliation de votre contrat en date d'aujourd'hui, soit le ${todayStr}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        const datePhrase = isToday ? `ce jour, le ${dateStr}` : `le ${dateStr}`;
+
+                        emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ${datePhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                    } else {
+                        // Requested date is in the past
+                        const todayStr = formatLongFrenchDate(today);
+                        rulesAppliedText = `Date demandée dans le passé (${formatLongFrenchDate(requestedDate)}). Résiliation impossible dans le passé, reprogrammée le jour même soit le ${todayStr}.`;
+                        rulesStatusClass = 'status-warning';
+
+                        emailBody = `Nous vous confirmons la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, nous vous informons qu'il n'est pas possible de résilier un contrat de manière rétroactive. Par conséquent, nous avons procédé à la résiliation de votre contrat en date d'aujourd'hui, soit le ${todayStr}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                    }
                 }
 
                 if (keepActive) {
@@ -431,14 +566,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let effElecDate;
                 let elecExplanationText = '';
-                if (reqElecDate >= today) {
-                    effElecDate = reqElecDate;
-                    const dateStr = formatLongFrenchDate(reqElecDate);
-                    const datePhrase = (reqElecDate.getTime() === today.getTime()) ? `ce jour, le ${dateStr}` : `le ${dateStr}`;
-                    elecExplanationText = `La résiliation sera effective ${datePhrase}.`;
+                if (isNonCommunicating) {
+                    const readingPhrase = getElecReadingPhrase();
+                    if (reqElecDate >= today) {
+                        effElecDate = reqElecDate;
+                        const dateStr = formatLongFrenchDate(reqElecDate);
+                        const isElecToday = reqElecDate.getTime() === today.getTime();
+                        if (isElecToday) {
+                            if (indexProvided) {
+                                elecExplanationText = `La résiliation sera effective ce jour, le ${dateStr}, ${readingPhrase}.`;
+                            } else {
+                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                                elecExplanationText = `La résiliation sera effective ce jour, le ${dateStr}, ${reqPhrase}.`;
+                            }
+                        } else {
+                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                            let readingNotice = '';
+                            if (indexProvided) {
+                                readingNotice = `\n- nous ne pouvons pas prendre en compte la relève que vous nous avez transmise car celle ci évoluera d'ici là`;
+                            }
+                            elecExplanationText = `Votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}`;
+                        }
+                    } else {
+                        effElecDate = today;
+                        const todayStr = formatLongFrenchDate(today);
+                        if (indexProvided) {
+                            elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${readingPhrase}.`;
+                        } else {
+                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                            elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${reqPhrase}.`;
+                        }
+                    }
                 } else {
-                    effElecDate = today;
-                    elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${formatLongFrenchDate(today)} (la date demandée étant dans le passé).`;
+                    if (reqElecDate >= today) {
+                        effElecDate = reqElecDate;
+                        const dateStr = formatLongFrenchDate(reqElecDate);
+                        const datePhrase = (reqElecDate.getTime() === today.getTime()) ? `ce jour, le ${dateStr}` : `le ${dateStr}`;
+                        elecExplanationText = `La résiliation sera effective ${datePhrase}.`;
+                    } else {
+                        effElecDate = today;
+                        elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${formatLongFrenchDate(today)} (la date demandée étant dans le passé).`;
+                    }
                 }
 
                 const effElecDateStr = formatLongFrenchDate(effElecDate);
@@ -512,6 +680,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à la date initialement souhaitée (${proposedElecDateStr}) ?`;
                 }
 
+                if (isNonCommunicating) {
+                    const reqPhrase = getElecReadingRequestPhrase('reminder');
+                    proposedElecPhrase += ` ${reqPhrase}`;
+                }
+
                 emailSubject = "⚠️ Demande de confirmation - Date de résiliation de vos contrats d'électricité et de gaz";
                 emailBody = `Nous avons bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat de gaz : ${gazExplanationText} Votre facture de clôture de gaz vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.\n\nCependant, la date souhaitée pour votre contrat d'électricité n'a pas été précisée. ${proposedElecPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, nous restons à votre entière disposition pour tout renseignement complémentaire.`;
                 rulesAppliedText = `Date gaz renseignée (${formatLongFrenchDate(reqGazDate)}), date électricité manquante. Confirmation pour le gaz et demande de précision pour l'électricité générées.`;
@@ -532,25 +705,50 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isRequestedBizDay = isBusinessDay(requestedDate);
                         if (isRequestedBizDay) {
                             const dateStr = formatLongFrenchDate(requestedDate);
-                            rulesAppliedText = `Date future (${formatLongFrenchDate(requestedDate)}). Les deux contrats (Élec & Gaz) seront résiliés à cette date.`;
-                            rulesStatusClass = 'status-success';
+                            if (isNonCommunicating) {
+                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                                rulesAppliedText = `Date future (${formatLongFrenchDate(requestedDate)}). Élec (sous réserve de relève de compteur non communicant) & Gaz seront résiliés à cette date.`;
+                                rulesStatusClass = 'status-warning';
 
-                            emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCes résiliations seront effectives le ${dateStr}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                                let readingNotice = '';
+                                if (indexProvided) {
+                                    readingNotice = `\n- nous ne pouvons pas prendre en compte la relève que vous nous avez transmise car celle ci évoluera d'ici là`;
+                                }
+
+                                emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : la résiliation sera effective le ${dateStr}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                            } else {
+                                rulesAppliedText = `Date future (${formatLongFrenchDate(requestedDate)}). Les deux contrats (Élec & Gaz) seront résiliés à cette date.`;
+                                rulesStatusClass = 'status-success';
+
+                                emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCes résiliations seront effectives le ${dateStr}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                            }
                         } else {
                             const effectiveDate = getClosestBusinessDay(requestedDate);
                             const effectiveDateStr = formatLongFrenchDate(effectiveDate);
                             const requestedDateStr = formatLongFrenchDate(requestedDate);
 
                             const dayOfWeekStr = requestedDate.getDay() === 6 ? 'samedi' : requestedDate.getDay() === 0 ? 'dimanche' : 'jour férié';
-                            rulesAppliedText = `Date future (${requestedDateStr}) tombant un ${dayOfWeekStr}. Élec résilié à cette date. Gaz reporté au prochain jour ouvré (${effectiveDateStr}).`;
-                            rulesStatusClass = 'status-warning';
-
                             const bulletPhrase = getFutureGazBulletPostponementPhrase(requestedDate, effectiveDate);
 
-                            emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation sera effective le ${requestedDateStr}.\n- Pour votre contrat de gaz : ${bulletPhrase}\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                            if (isNonCommunicating) {
+                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                                rulesAppliedText = `Date future (${requestedDateStr}) tombant un ${dayOfWeekStr}. Élec résilié le jour demandé (compteur non communicant sous réserve de relève). Gaz reporté au prochain jour ouvré (${effectiveDateStr}).`;
+                                rulesStatusClass = 'status-warning';
+
+                                let readingNotice = '';
+                                if (indexProvided) {
+                                    readingNotice = `\n- nous ne pouvons pas prendre en compte la relève que vous nous avez transmise car celle ci évoluera d'ici là`;
+                                }
+
+                                emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${requestedDateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : ${bulletPhrase}\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                            } else {
+                                rulesAppliedText = `Date future (${requestedDateStr}) tombant un ${dayOfWeekStr}. Élec résilié à cette date. Gaz reporté au prochain jour ouvré (${effectiveDateStr}).`;
+                                rulesStatusClass = 'status-warning';
+
+                                emailBody = `Nous vous confirmons la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation sera effective le ${requestedDateStr}.\n- Pour votre contrat de gaz : ${bulletPhrase}\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                            }
                         }
                     } else if (isPast) {
-                        // Split logic for past date: Elec is today, Gaz is tomorrow if business day or next business day
                         const todayStr = formatLongFrenchDate(today);
                         const nextBizStr = formatLongFrenchDate(nextBusinessDay);
 
@@ -560,16 +758,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isTomorrow = nextBusinessDay.getTime() === tomorrow.getTime();
                         const gazEffectivePhrase = isTomorrow ? `le prochain jour ouvré, soit demain, le ${nextBizStr}` : `le prochain jour ouvré, soit le ${nextBizStr}`;
 
-                        rulesAppliedText = `Date demandée dans le passé (${formatLongFrenchDate(requestedDate)}). Élec résilié le jour d'aujourd’hui (${todayStr}). Gaz décalé ${gazEffectivePhrase}.`;
-                        rulesStatusClass = 'status-warning';
+                        if (isNonCommunicating) {
+                            rulesAppliedText = `Date passée (${formatLongFrenchDate(requestedDate)}). Élec résilié ce jour (${todayStr}) (compteur non communicant). Gaz décalé ${gazEffectivePhrase}.`;
+                            rulesStatusClass = 'status-warning';
 
-                        emailBody = `Nous vous confirmons la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLa date de résiliation demandée étant dans le passé, nous vous informons qu'il n'est pas possible de résilier un contrat de manière rétroactive.\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective le jour d'aujourd'hui, soit le ${todayStr}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz sera effective ${gazEffectivePhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                            const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date");
+
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLa date de résiliation demandée étant dans le passé, nous vous informons qu'il n'est pas possible de résilier un contrat de manière rétroactive.\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation de votre contrat d'électricité est effective le jour d'aujourd'hui, soit le ${todayStr}, ${readingText}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz sera effective ${gazEffectivePhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                        } else {
+                            rulesAppliedText = `Date demandée dans le passé (${formatLongFrenchDate(requestedDate)}). Élec résilié le jour d'aujourd’hui (${todayStr}). Gaz décalé ${gazEffectivePhrase}.`;
+                            rulesStatusClass = 'status-warning';
+
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLa date de résiliation demandée étant dans le passé, nous vous informons qu'il n'est pas possible de résilier un contrat de manière rétroactive.\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective le jour d'aujourd'hui, soit le ${todayStr}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz sera effective ${gazEffectivePhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                        }
                     } else {
-                        // Requested is today (isToday)
+                        // Requested is today
                         const todayStr = formatLongFrenchDate(today);
                         const nextBizStr = formatLongFrenchDate(nextBusinessDay);
-                        rulesAppliedText = `Date demandée aujourd'hui (${formatLongFrenchDate(requestedDate)}). Élec résilié aujourd'hui (${todayStr}). Gaz décalé au prochain jour ouvré (${nextBizStr}).`;
-                        rulesStatusClass = 'status-warning';
 
                         const tomorrow = new Date(today);
                         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -577,7 +782,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isTomorrow = nextBusinessDay.getTime() === tomorrow.getTime();
                         const nextBizPhrase = isTomorrow ? `soit demain, le ${nextBizStr}` : `soit le ${nextBizStr}`;
 
-                        emailBody = `Nous vous confirmons la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective aujourd'hui, soit le ${todayStr}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz ne pouvant pas s'effectuer le jour même, la résiliation sera effective le prochain jour ouvré, ${nextBizPhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                        if (isNonCommunicating) {
+                            rulesAppliedText = `Date demandée aujourd'hui (${formatLongFrenchDate(requestedDate)}). Élec résilié aujourd'hui (${todayStr}) (compteur non communicant). Gaz décalé au prochain jour ouvré (${nextBizStr}).`;
+                            rulesStatusClass = 'status-warning';
+
+                            const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date");
+
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective aujourd'hui, soit le ${todayStr}, ${readingText}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz ne pouvant pas s'effectuer le jour même, la résiliation sera effective le prochain jour ouvré, ${nextBizPhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                        } else {
+                            rulesAppliedText = `Date demandée aujourd'hui (${formatLongFrenchDate(requestedDate)}). Élec résilié aujourd'hui (${todayStr}). Gaz décalé au prochain jour ouvré (${nextBizStr}).`;
+                            rulesStatusClass = 'status-warning';
+
+                            emailBody = `Nous vous confirmons la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective aujourd'hui, soit le ${todayStr}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz ne pouvant pas s'effectuer le jour même, la résiliation sera effective le prochain jour ouvré, ${nextBizPhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nNous restons à votre entière disposition pour tout renseignement complémentaire.`;
+                        }
                     }
                 } else {
                     // Distinct filled dates
@@ -589,14 +806,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Evaluate electricity date
                     let effElecDate;
                     let elecExplanationText = '';
-                    if (reqElecDate >= today) {
-                        effElecDate = reqElecDate;
-                        const dateStr = formatLongFrenchDate(reqElecDate);
-                        const datePhrase = (reqElecDate.getTime() === today.getTime()) ? `ce jour, le ${dateStr}` : `le ${dateStr}`;
-                        elecExplanationText = `la résiliation sera effective ${datePhrase}`;
+                    if (isNonCommunicating) {
+                        const readingPhrase = getElecReadingPhrase();
+                        if (reqElecDate >= today) {
+                            effElecDate = reqElecDate;
+                            const dateStr = formatLongFrenchDate(reqElecDate);
+                            const isElecToday = reqElecDate.getTime() === today.getTime();
+                            if (isElecToday) {
+                                if (indexProvided) {
+                                    elecExplanationText = `la résiliation de votre contrat d'électricité sera effective ce jour, le ${dateStr}, ${readingPhrase}`;
+                                } else {
+                                    const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                                    elecExplanationText = `la résiliation de votre contrat d'électricité sera effective ce jour, le ${dateStr}, ${reqPhrase}`;
+                                }
+                            } else {
+                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                                let readingNotice = '';
+                                if (indexProvided) {
+                                    readingNotice = `\n- nous ne pouvons pas prendre en compte la relève que vous nous avez transmise car celle ci évoluera d'ici là`;
+                                }
+                                elecExplanationText = `votre compteur étant non communicant, la résiliation de votre contrat d'électricité sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}`;
+                            }
+                        } else {
+                            effElecDate = today;
+                            const todayStr = formatLongFrenchDate(today);
+                            if (indexProvided) {
+                                elecExplanationText = `la résiliation de votre contrat d'électricité sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${readingPhrase}`;
+                            } else {
+                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
+                                elecExplanationText = `la résiliation de votre contrat d'électricité sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${reqPhrase}`;
+                            }
+                        }
                     } else {
-                        effElecDate = today;
-                        elecExplanationText = `la résiliation sera effective en date d'aujourd'hui, soit le ${formatLongFrenchDate(today)} (la date demandée étant dans le passé)`;
+                        if (reqElecDate >= today) {
+                            effElecDate = reqElecDate;
+                            const dateStr = formatLongFrenchDate(reqElecDate);
+                            const datePhrase = (reqElecDate.getTime() === today.getTime()) ? `ce jour, le ${dateStr}` : `le ${dateStr}`;
+                            elecExplanationText = `la résiliation sera effective ${datePhrase}`;
+                        } else {
+                            effElecDate = today;
+                            elecExplanationText = `la résiliation sera effective en date d'aujourd'hui, soit le ${formatLongFrenchDate(today)} (la date demandée étant dans le passé)`;
+                        }
                     }
 
                     // Evaluate gas date
@@ -646,6 +896,55 @@ document.addEventListener('DOMContentLoaded', () => {
         rulesBanner.className = `rules-feedback card ${rulesStatusClass}`;
     }
 
+    function updateReadingFieldsVisibility() {
+        const meterTypeRadio = document.querySelector('input[name="elec-meter-type"]:checked');
+        const meterType = meterTypeRadio ? meterTypeRadio.value : 'linky';
+        const optionRadio = document.querySelector('input[name="elec-reading-option"]:checked');
+        const option = optionRadio ? optionRadio.value : 'base';
+
+        const showBase = (option === 'base');
+        const showHp = (option === 'hphc');
+        const showHc = (option === 'hphc');
+        const showLinkySub = (meterType === 'linky');
+
+        if (showBase) {
+            wrapperReadingBase.classList.remove('hide');
+        } else {
+            wrapperReadingBase.classList.add('hide');
+            readingBaseVal.value = '';
+        }
+
+        if (showHp) {
+            wrapperReadingHp.classList.remove('hide');
+        } else {
+            wrapperReadingHp.classList.add('hide');
+            readingHpVal.value = '';
+        }
+        if (showHc) {
+            wrapperReadingHc.classList.remove('hide');
+        } else {
+            wrapperReadingHc.classList.add('hide');
+            readingHcVal.value = '';
+        }
+
+        if (showLinkySub) {
+            wrapperReadingHph.classList.remove('hide');
+            wrapperReadingHpb.classList.remove('hide');
+            wrapperReadingHch.classList.remove('hide');
+            wrapperReadingHcb.classList.remove('hide');
+        } else {
+            wrapperReadingHph.classList.add('hide');
+            wrapperReadingHpb.classList.add('hide');
+            wrapperReadingHch.classList.add('hide');
+            wrapperReadingHcb.classList.add('hide');
+
+            readingHphVal.value = '';
+            readingHpbVal.value = '';
+            readingHchVal.value = '';
+            readingHcbVal.value = '';
+        }
+    }
+
     // Update form visibility based on selected contract types
     function updateContractInputVisibility() {
         const energyType = document.querySelector('input[name="energy-type"]:checked').value;
@@ -662,6 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 groupContractGaz.classList.add('hide');
             }
+            groupElecMeter.classList.remove('hide');
         } else if (energyType === 'gaz') {
             groupKeepActive.classList.remove('hide');
             keepActiveLabel.textContent = "Le client détient aussi un contrat d'électricité et souhaite le conserver actif (ne résilier que le gaz)";
@@ -673,13 +973,35 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 groupContractElec.classList.add('hide');
             }
+            groupElecMeter.classList.add('hide');
+            meterNonCommunicating.checked = false;
+            groupElecReading.classList.add('hide');
+            elecReadingProvided.checked = false;
+            groupElecReadingInputs.classList.add('hide');
+
+            const defaultLinkyRadio = document.querySelector('input[name="elec-meter-type"][value="linky"]');
+            if (defaultLinkyRadio) defaultLinkyRadio.checked = true;
+            const defaultBaseRadio = document.querySelector('input[name="elec-reading-option"][value="base"]');
+            if (defaultBaseRadio) defaultBaseRadio.checked = true;
+
+            readingBaseVal.value = '';
+            readingHpVal.value = '';
+            readingHcVal.value = '';
+            readingHphVal.value = '';
+            readingHpbVal.value = '';
+            readingHchVal.value = '';
+            readingHcbVal.value = '';
+
+            updateReadingFieldsVisibility();
         } else {
             groupKeepActive.classList.add('hide');
             groupContractElec.classList.remove('hide');
             groupContractGaz.classList.remove('hide');
             groupDateElec.classList.remove('hide');
             groupDateGaz.classList.remove('hide');
+            groupElecMeter.classList.remove('hide');
         }
+        updateReadingFieldsVisibility();
     }
 
     // -------------------------------------------------------------
@@ -725,6 +1047,74 @@ document.addEventListener('DOMContentLoaded', () => {
         updateContractInputVisibility();
         generateEmail();
     });
+
+    meterNonCommunicating.addEventListener('change', () => {
+        if (meterNonCommunicating.checked) {
+            groupElecReading.classList.remove('hide');
+        } else {
+            groupElecReading.classList.add('hide');
+            elecReadingProvided.checked = false;
+            groupElecReadingInputs.classList.add('hide');
+
+            const defaultLinkyRadio = document.querySelector('input[name="elec-meter-type"][value="linky"]');
+            if (defaultLinkyRadio) defaultLinkyRadio.checked = true;
+            const defaultBaseRadio = document.querySelector('input[name="elec-reading-option"][value="base"]');
+            if (defaultBaseRadio) defaultBaseRadio.checked = true;
+
+            readingBaseVal.value = '';
+            readingHpVal.value = '';
+            readingHcVal.value = '';
+            readingHphVal.value = '';
+            readingHpbVal.value = '';
+            readingHchVal.value = '';
+            readingHcbVal.value = '';
+
+            updateReadingFieldsVisibility();
+        }
+        generateEmail();
+    });
+
+    elecReadingProvided.addEventListener('change', () => {
+        if (elecReadingProvided.checked) {
+            groupElecReadingInputs.classList.remove('hide');
+            updateReadingFieldsVisibility();
+        } else {
+            groupElecReadingInputs.classList.add('hide');
+
+            readingBaseVal.value = '';
+            readingHpVal.value = '';
+            readingHcVal.value = '';
+            readingHphVal.value = '';
+            readingHpbVal.value = '';
+            readingHchVal.value = '';
+            readingHcbVal.value = '';
+
+            updateReadingFieldsVisibility();
+        }
+        generateEmail();
+    });
+
+    document.querySelectorAll('input[name="elec-meter-type"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            updateReadingFieldsVisibility();
+            generateEmail();
+        });
+    });
+
+    document.querySelectorAll('input[name="elec-reading-option"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            updateReadingFieldsVisibility();
+            generateEmail();
+        });
+    });
+
+    readingBaseVal.addEventListener('input', generateEmail);
+    readingHpVal.addEventListener('input', generateEmail);
+    readingHcVal.addEventListener('input', generateEmail);
+    readingHphVal.addEventListener('input', generateEmail);
+    readingHpbVal.addEventListener('input', generateEmail);
+    readingHchVal.addEventListener('input', generateEmail);
+    readingHcbVal.addEventListener('input', generateEmail);
 
     // Clear buttons
     btnClearElec.addEventListener('click', () => {

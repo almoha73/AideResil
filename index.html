@@ -145,6 +145,146 @@
                     </div>
                 </div>
 
+                <!-- Electricity Meter Details (Dynamic) -->
+                <div class="form-group hide" id="group-elec-meter" style="margin-top: 20px;">
+                    <label class="field-label">Caractéristiques du compteur électrique :</label>
+                    <div class="keep-active-container" style="display: flex; flex-direction: column; gap: 12px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                            <input type="checkbox" id="meter-non-communicating"
+                                style="accent-color: var(--primary); width: 18px; height: 18px; border-radius: 4px; cursor: pointer;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">Compteur électricité non
+                                communicant</span>
+                        </label>
+                        <div class="hide" id="group-elec-reading"
+                            style="padding-left: 24px; border-left: 2px solid var(--primary); display: flex; flex-direction: column; gap: 14px; margin-top: 4px;">
+
+                            <!-- Meter Type Selection -->
+                            <div>
+                                <span
+                                    style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Type
+                                    de compteur :</span>
+                                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                    <label
+                                        style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                        <input type="radio" name="elec-meter-type" value="linky" checked
+                                            style="accent-color: var(--primary); cursor: pointer;">
+                                        <span>Linky non-communicant</span>
+                                    </label>
+                                    <label
+                                        style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                        <input type="radio" name="elec-meter-type" value="ancien"
+                                            style="accent-color: var(--primary); cursor: pointer;">
+                                        <span>Ancien compteur (mécanique/électronique)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Tariff Option Selection -->
+                            <div>
+                                <span
+                                    style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">Option
+                                    tarifaire du contrat :</span>
+                                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                                    <label
+                                        style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                        <input type="radio" name="elec-reading-option" value="base" checked
+                                            style="accent-color: var(--primary); cursor: pointer;">
+                                        <span>Option Base</span>
+                                    </label>
+                                    <label
+                                        style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                        <input type="radio" name="elec-reading-option" value="hphc"
+                                            style="accent-color: var(--primary); cursor: pointer;">
+                                        <span>Option HP / HC</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <label
+                                style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; margin-top: 4px;">
+                                <input type="checkbox" id="elec-reading-provided"
+                                    style="accent-color: var(--primary); width: 16px; height: 16px; border-radius: 4px; cursor: pointer;">
+                                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-muted);">Relève
+                                    d'index d'électricité transmise</span>
+                            </label>
+
+                            <!-- Reading Fields Inputs (only shown when checkbox checked) -->
+                            <div class="hide" id="group-elec-reading-inputs"
+                                style="margin-top: 4px; padding: 12px; background: rgba(244, 246, 250, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
+
+                                <div id="group-reading-fields-grid"
+                                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;">
+
+                                    <div id="wrapper-reading-base" class="form-group" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            Base :</label>
+                                        <input type="number" id="reading-base-val" class="form-control"
+                                            placeholder="ex: 12345" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                    <div id="wrapper-reading-hp" class="form-group hide" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            HP :</label>
+                                        <input type="number" id="reading-hp-val" class="form-control"
+                                            placeholder="ex: 123456" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                    <div id="wrapper-reading-hc" class="form-group hide" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            HC :</label>
+                                        <input type="number" id="reading-hc-val" class="form-control"
+                                            placeholder="ex: 123456" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                    <div id="wrapper-reading-hph" class="form-group" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            HPH :</label>
+                                        <input type="number" id="reading-hph-val" class="form-control"
+                                            placeholder="ex: 12345" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                    <div id="wrapper-reading-hpb" class="form-group" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            HPB :</label>
+                                        <input type="number" id="reading-hpb-val" class="form-control"
+                                            placeholder="ex: 12345" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                    <div id="wrapper-reading-hch" class="form-group" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            HCH :</label>
+                                        <input type="number" id="reading-hch-val" class="form-control"
+                                            placeholder="ex: 12345" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                    <div id="wrapper-reading-hcb" class="form-group" style="margin-bottom: 0;">
+                                        <label class="field-label"
+                                            style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Index
+                                            HCB :</label>
+                                        <input type="number" id="reading-hcb-val" class="form-control"
+                                            placeholder="ex: 12345" min="0"
+                                            style="padding: 6px 10px; height: 34px; font-size: 0.85rem;">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="panel-section-title mt-lg">
                     <span class="step-num">2</span>
                     <h2>Identifiants</h2>
