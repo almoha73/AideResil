@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AideResil - Générateur de Mails de Résiliation</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Flatpickr (Calendar Date Picker Library) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar or Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linejoin="round" />
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>AideResil</h1>
+                    <p>Assistant de résiliation Gaz & Électricité</p>
+                </div>
+            </div>
+
+            <div class="theme-toggle-container">
+                <span class="theme-label">Mode Sombre</span>
+                <button id="theme-toggle" class="theme-switch-btn" aria-label="Toggle theme">
+                    <span class="switch-handle"></span>
+                </button>
+            </div>
+        </header>
+
+        <main class="app-content">
+            <!-- Left Panel: Configuration Form -->
+            <section class="config-panel card">
+                <div class="panel-section-title">
+                    <span class="step-num">1</span>
+                    <h2>Configuration du contrat</h2>
+                </div>
+
+                <!-- Product Selection Selection -->
+                <div class="form-group">
+                    <label class="field-label">Type d'énergie à résilier :</label>
+                    <div class="energy-selector-grid">
+                        <label class="energy-card-label" for="energy-elec">
+                            <input type="radio" id="energy-elec" name="energy-type" value="elec" checked>
+                            <div class="energy-card">
+                                <div class="energy-icon icon-elec">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                                    </svg>
+                                </div>
+                                <span class="energy-name">Électricité</span>
+                            </div>
+                        </label>
+
+                        <label class="energy-card-label" for="energy-gaz">
+                            <input type="radio" id="energy-gaz" name="energy-type" value="gaz">
+                            <div class="energy-card">
+                                <div class="energy-icon icon-gaz">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2c0 0-4.5 5.5-4.5 9a4.5 4.5 0 0 0 9 0c0-3.5-4.5-9-4.5-9z" />
+                                    </svg>
+                                </div>
+                                <span class="energy-name">Gaz</span>
+                            </div>
+                        </label>
+
+                        <label class="energy-card-label" for="energy-both">
+                            <input type="radio" id="energy-both" name="energy-type" value="both">
+                            <div class="energy-card">
+                                <div class="energy-icon icon-both">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M9 2L3 11h6L8 16h6l-3.5 6M18 10c0 0-2.5 3-2.5 5a2.5 2.5 0 0 0 5 0c0-2-2.5-5-2.5-5z" />
+                                    </svg>
+                                </div>
+                                <span class="energy-name">Élec + Gaz</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Option to keep the other contract active -->
+                <div class="form-group hide" id="group-keep-active" style="margin-top: -8px; margin-bottom: 20px;">
+                    <label class="keep-active-container"
+                        style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="keep-active-other"
+                            style="accent-color: var(--primary); width: 18px; height: 18px; border-radius: 4px; cursor: pointer;">
+                        <span style="font-size: 0.875rem; font-weight: 500; line-height: 1.4;"
+                            id="keep-active-label">Conserver l'autre offre active</span>
+                    </label>
+                </div>
+
+                <!-- Date Picker Section (Dynamic based on product selection) -->
+                <div class="form-group" id="group-date-elec">
+                    <label class="field-label" for="cancel-date-elec">Date de résiliation Électricité :</label>
+                    <div class="date-input-wrapper">
+                        <div style="display: flex; gap: 8px; width: 100%;">
+                            <input type="date" id="cancel-date-elec" class="form-control" style="flex: 1;">
+                            <button type="button" class="btn-shortcut" id="btn-clear-elec" title="Effacer la date"
+                                style="padding: 0 12px; margin-top: 0; min-height: 43px; border-radius: 8px; background: rgba(220,53,69,0.1); color: #ef4444; border: 1px dashed #ef4444; cursor: pointer;">✕</button>
+                        </div>
+                        <div class="date-shortcuts">
+                            <button type="button" class="btn-shortcut" id="btn-today-elec">Aujourd'hui</button>
+                            <button type="button" class="btn-shortcut" id="btn-tomorrow-elec">Demain</button>
+                            <button type="button" class="btn-shortcut" id="btn-next-monday-elec">Lundi prochain</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="group-date-gaz">
+                    <label class="field-label" for="cancel-date-gaz">Date de résiliation Gaz :</label>
+                    <div class="date-input-wrapper">
+                        <div style="display: flex; gap: 8px; width: 100%;">
+                            <input type="date" id="cancel-date-gaz" class="form-control" style="flex: 1;">
+                            <button type="button" class="btn-shortcut" id="btn-clear-gaz" title="Effacer la date"
+                                style="padding: 0 12px; margin-top: 0; min-height: 43px; border-radius: 8px; background: rgba(220,53,69,0.1); color: #ef4444; border: 1px dashed #ef4444; cursor: pointer;">✕</button>
+                        </div>
+                        <div class="date-shortcuts">
+                            <button type="button" class="btn-shortcut" id="btn-today-gaz">Aujourd'hui</button>
+                            <button type="button" class="btn-shortcut" id="btn-tomorrow-gaz">Demain</button>
+                            <button type="button" class="btn-shortcut" id="btn-next-monday-gaz">Lundi prochain</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section-title mt-lg">
+                    <span class="step-num">2</span>
+                    <h2>Identifiants</h2>
+                </div>
+
+                <!-- Contract ID Fields (Dynamic based on product selection) -->
+                <div class="contract-fields-container">
+                    <div class="form-group" id="group-contract-elec">
+                        <label class="field-label" for="contract-elec">PDL (Électricité) :</label>
+                        <input type="text" id="contract-elec" class="form-control" placeholder="Ex: 24719284910283">
+                    </div>
+
+                    <div class="form-group" id="group-contract-gaz">
+                        <label class="field-label" for="contract-gaz">PCE (Gaz) :</label>
+                        <input type="text" id="contract-gaz" class="form-control" placeholder="Ex: 12948293849102">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Output & Live Preview -->
+            <section class="preview-panel">
+                <!-- Info Rules applied -->
+                <div class="rules-feedback card" id="rules-banner">
+                    <div class="rules-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                        </svg>
+                    </div>
+                    <div class="rules-text">
+                        <h3 id="rules-title">Règles de date appliquées</h3>
+                        <p id="rules-description">Veuillez renseigner le formulaire pour calculer les dates.</p>
+                    </div>
+                </div>
+
+                <!-- Email Mock Client -->
+                <div class="email-mock-container card">
+                    <div class="email-mock-header">
+                        <div class="dots-indicators">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="email-mock-title">Nouveau Message</div>
+                    </div>
+
+                    <div class="email-meta-inputs">
+                        <div class="meta-row">
+                            <span class="meta-label">De :</span>
+                            <span class="meta-value font-medium"
+                                id="preview-sender">votre-service-client@energie.fr</span>
+                        </div>
+
+                        <div class="meta-row subject-row">
+                            <span class="meta-label">Objet :</span>
+                            <input type="text" id="email-subject-input" class="subject-input-text" readonly>
+                            <button class="btn-copy-small" id="btn-copy-subject" title="Copier l'objet">
+                                <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                </svg>
+                                <span>Copier</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="email-body-container">
+                        <textarea id="email-body-input" class="email-body-text" readonly></textarea>
+                    </div>
+
+                    <div class="email-mock-footer">
+                        <button class="btn-action btn-copy-all" id="btn-copy-body">
+                            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            <span>Copier le corps du mail</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast System -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
