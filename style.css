@@ -757,7 +757,8 @@ body {
     overflow: hidden;
 }
 
-#group-elec-meter {
+#group-elec-meter,
+#group-gaz-appointment {
     transition: var(--transition);
     max-height: 1200px;
     opacity: 1;
@@ -768,7 +769,8 @@ body {
 #group-date-elec.hide,
 #group-date-gaz.hide,
 #group-keep-active.hide,
-#group-elec-meter.hide {
+#group-elec-meter.hide,
+#group-gaz-appointment.hide {
     max-height: 0;
     opacity: 0;
     margin-top: 0 !important;
@@ -788,7 +790,8 @@ body {
 #wrapper-reading-hph.hide,
 #wrapper-reading-hpb.hide,
 #wrapper-reading-hch.hide,
-#wrapper-reading-hcb.hide {
+#wrapper-reading-hcb.hide,
+#group-gaz-appointment-details.hide {
     display: none !important;
 }
 

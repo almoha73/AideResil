@@ -285,6 +285,32 @@
                     </div>
                 </div>
 
+                <!-- Gas Appointment Section (Dynamic) -->
+                <div class="form-group hide" id="group-gaz-appointment" style="margin-top: 20px;">
+                    <label class="field-label">Rendez-vous de résiliation Gaz :</label>
+                    <div class="keep-active-container" style="display: flex; flex-direction: column; gap: 12px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                            <input type="checkbox" id="gaz-appointment-needed"
+                                style="accent-color: var(--primary); width: 18px; height: 18px; border-radius: 4px; cursor: pointer;">
+                            <span style="font-size: 0.875rem; font-weight: 500;">Rendez-vous GRDF nécessaire</span>
+                        </label>
+                        <div class="hide" id="group-gaz-appointment-details"
+                            style="padding-left: 24px; border-left: 2px solid var(--primary); display: flex; flex-direction: column; gap: 14px; margin-top: 4px;">
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="field-label" for="gaz-appointment-date" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Date du rendez-vous :</label>
+                                <input type="date" id="gaz-appointment-date" class="form-control" style="padding: 6px 10px; height: 38px; font-size: 0.85rem;">
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="field-label" for="gaz-appointment-time" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Plage horaire :</label>
+                                <input type="text" id="gaz-appointment-time" class="form-control" placeholder="Ex: 8h00 - 12h00 ou Matin" style="padding: 6px 10px; height: 38px; font-size: 0.85rem;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="panel-section-title mt-lg">
                     <span class="step-num">2</span>
                     <h2>Identifiants</h2>
