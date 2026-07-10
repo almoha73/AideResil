@@ -305,7 +305,16 @@
 
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label class="field-label" for="gaz-appointment-time" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">Plage horaire :</label>
-                                <input type="text" id="gaz-appointment-time" class="form-control" placeholder="Ex: 8h00 - 12h00 ou Matin" style="padding: 6px 10px; height: 38px; font-size: 0.85rem;">
+                                <select id="gaz-appointment-time" class="form-control" style="padding: 6px 10px; height: 38px; font-size: 0.85rem; cursor: pointer;">
+                                    <option value="" disabled selected>Sélectionner une plage horaire...</option>
+                                    <option value="8h00 - 12h00">Matin (8h00 - 12h00)</option>
+                                    <option value="13h00 - 17h00">Après-midi (13h00 - 17h00)</option>
+                                    <option value="11h30 - 13h30">Méridienne (11h30 - 13h30)</option>
+                                    <option value="custom">Autre / Saisie personnalisée...</option>
+                                </select>
+                            </div>
+                            <div class="form-group hide" id="group-gaz-appointment-time-custom" style="margin-top: 8px; margin-bottom: 0;">
+                                <input type="text" id="gaz-appointment-time-custom" class="form-control" placeholder="Ex: 9h00 - 11h00, Journée, etc." style="padding: 6px 10px; height: 38px; font-size: 0.85rem;">
                             </div>
                         </div>
                     </div>
@@ -360,12 +369,6 @@
                     </div>
 
                     <div class="email-meta-inputs">
-                        <div class="meta-row">
-                            <span class="meta-label">De :</span>
-                            <span class="meta-value font-medium"
-                                id="preview-sender">votre-service-client@energie.fr</span>
-                        </div>
-
                         <div class="meta-row subject-row">
                             <span class="meta-label">Objet :</span>
                             <input type="text" id="email-subject-input" class="subject-input-text" readonly>

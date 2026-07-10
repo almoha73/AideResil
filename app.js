@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const groupGazAppointmentDetails = document.getElementById('group-gaz-appointment-details');
     const gazAppointmentDateInput = document.getElementById('gaz-appointment-date');
     const gazAppointmentTimeInput = document.getElementById('gaz-appointment-time');
+    const groupGazAppointmentTimeCustom = document.getElementById('group-gaz-appointment-time-custom');
+    const gazAppointmentTimeCustomInput = document.getElementById('gaz-appointment-time-custom');
 
     // Individual inputs
     const readingBaseVal = document.getElementById('reading-base-val');
@@ -868,7 +870,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 let gazDetailParagraph = `Pour votre contrat de gaz : ${gazExplanationText} Votre facture de clôture de gaz vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                 let subjectTag = "";
                 if (isRdvNeeded) {
-                    const rdvTimeStr = gazAppointmentTimeInput.value.trim() || "[Plage horaire]";
+                    const rdvTimeStr = (gazAppointmentTimeInput.value === 'custom'
+                        ? gazAppointmentTimeCustomInput.value.trim()
+                        : gazAppointmentTimeInput.value.trim()) || "[Plage horaire]";
                     const appointmentPhrase = `Ce rendez-vous est programmé sur la plage horaire : ${rdvTimeStr}. Si cette date ne vous convient pas, je vous invite à revenir vers moi ou à la modifier directement depuis le SMS envoyé par GRDF.\nVous devez impérativement être présent ou vous faire représenter. Le jour de l'intervention, je vous demande de répondre à tous vos appels, car les techniciens appellent généralement en numéro masqué ou avec un numéro commençant par 09. Si vous ne répondez pas, ils ne se déplaceront pas, la résiliation ne pourra pas être effectuée et un déplacement vain risquera de vous être facturé.`;
                     
                     gazDetailParagraph = `Pour votre contrat de gaz : ${gazExplanationText}\n\n${appointmentPhrase}\n\nVotre facture de clôture de gaz vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
@@ -1130,7 +1134,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 emailSubject = "⚠️ Rendez-vous obligatoire - " + emailSubject;
             }
 
-            const rdvTimeStr = gazAppointmentTimeInput.value.trim() || "[Plage horaire]";
+            const rdvTimeStr = (gazAppointmentTimeInput.value === 'custom'
+                ? gazAppointmentTimeCustomInput.value.trim()
+                : gazAppointmentTimeInput.value.trim()) || "[Plage horaire]";
             
             const appointmentPhrase = `Ce rendez-vous est programmé sur la plage horaire : ${rdvTimeStr}. Si cette date ne vous convient pas, je vous invite à revenir vers moi ou à la modifier directement depuis le SMS envoyé par GRDF.\nVous devez impérativement être présent ou vous faire représenter. Le jour de l'intervention, je vous demande de répondre à tous vos appels, car les techniciens appellent généralement en numéro masqué ou avec un numéro commençant par 09. Si vous ne répondez pas, ils ne se déplaceront pas, la résiliation ne pourra pas être effectuée et un déplacement vain risquera de vous être facturé.`;
 
@@ -1264,6 +1270,8 @@ document.addEventListener('DOMContentLoaded', () => {
             groupGazAppointmentDetails.classList.add('hide');
             gazAppointmentDatePicker.clear();
             gazAppointmentTimeInput.value = '';
+            gazAppointmentTimeCustomInput.value = '';
+            groupGazAppointmentTimeCustom.classList.add('hide');
         } else if (energyType === 'gaz') {
             groupKeepActive.classList.remove('hide');
             keepActiveLabel.textContent = "Le client détient aussi un contrat d'électricité et souhaite le conserver actif (ne résilier que le gaz)";
@@ -1431,11 +1439,23 @@ document.addEventListener('DOMContentLoaded', () => {
             groupGazAppointmentDetails.classList.add('hide');
             gazAppointmentDatePicker.clear();
             gazAppointmentTimeInput.value = '';
+            gazAppointmentTimeCustomInput.value = '';
+            groupGazAppointmentTimeCustom.classList.add('hide');
         }
         generateEmail();
     });
 
-    gazAppointmentTimeInput.addEventListener('input', generateEmail);
+    gazAppointmentTimeInput.addEventListener('change', () => {
+        if (gazAppointmentTimeInput.value === 'custom') {
+            groupGazAppointmentTimeCustom.classList.remove('hide');
+        } else {
+            groupGazAppointmentTimeCustom.classList.add('hide');
+            gazAppointmentTimeCustomInput.value = '';
+        }
+        generateEmail();
+    });
+
+    gazAppointmentTimeCustomInput.addEventListener('input', generateEmail);
 
     // Clear buttons
     btnClearElec.addEventListener('click', () => {
