@@ -39,8 +39,8 @@
 
 /* Dark Theme Overrides (Inspired by Gradients.app) */
 [data-theme="dark"] {
-    --bg-app: #140534;
-    --bg-card: #39315a;
+    --bg-app: #39315a;
+    --bg-card: #140534;
     --text-main: #e5d9e9;
     --text-muted: #8880a4;
     --primary: #f251f8;
