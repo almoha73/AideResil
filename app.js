@@ -342,20 +342,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (option === 'base') {
                     const valBase = readingBaseVal.value.trim() || '[Index Base]';
-                    return `sur la base des relèves que vous m'avez transmises (Index Base : ${valBase} kWh, HPH : ${valHph} kWh, HPB : ${valHpb} kWh, HCH : ${valHch} kWh, HCB : ${valHcb} kWh)`;
+                    return `sur la base des relèves que vous m'avez transmises (Index Base : ${valBase}, HPH : ${valHph}, HPB : ${valHpb}, HCH : ${valHch}, HCB : ${valHcb})`;
                 } else {
                     const valHp = readingHpVal.value.trim() || '[Index HP]';
                     const valHc = readingHcVal.value.trim() || '[Index HC]';
-                    return `sur la base des relèves que vous m'avez transmises (Index HP : ${valHp} kWh, HC : ${valHc} kWh, HPH : ${valHph} kWh, HPB : ${valHpb} kWh, HCH : ${valHch} kWh, HCB : ${valHcb} kWh)`;
+                    return `sur la base des relèves que vous m'avez transmises (Index HP : ${valHp}, HC : ${valHc}, HPH : ${valHph}, HPB : ${valHpb}, HCH : ${valHch}, HCB : ${valHcb})`;
                 }
             } else {
                 if (option === 'base') {
                     const valBase = readingBaseVal.value.trim() || '[Index Base]';
-                    return `sur la base de la relève que vous m'avez transmise (Index Base : ${valBase} kWh)`;
+                    return `sur la base de la relève que vous m'avez transmise (Index Base : ${valBase})`;
                 } else {
                     const valHp = readingHpVal.value.trim() || '[Index Heures Pleines]';
                     const valHc = readingHcVal.value.trim() || '[Index Heures Creuses]';
-                    return `sur la base des relèves que vous m'avez transmises (Index Heures Pleines : ${valHp} kWh, Heures Creuses : ${valHc} kWh)`;
+                    return `sur la base des relèves que vous m'avez transmises (Index Heures Pleines : ${valHp}, Heures Creuses : ${valHc})`;
                 }
             }
         }
@@ -1212,7 +1212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } else if (energyType === 'both') {
-                const dateElecVal = cancelDateBothInput.value || cancelDateElecInput.value;
+                const dateElecVal = cancelDateElecInput.value;
                 if (dateElecVal) {
                     const requestedDate = parseLocalDate(dateElecVal);
                     requestedDate.setHours(0, 0, 0, 0);
@@ -1242,7 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } else if (energyType === 'both') {
-                const dateElecVal = cancelDateBothInput.value || cancelDateElecInput.value;
+                const dateElecVal = cancelDateElecInput.value;
                 if (dateElecVal) {
                     const requestedDate = parseLocalDate(dateElecVal);
                     requestedDate.setHours(0, 0, 0, 0);
