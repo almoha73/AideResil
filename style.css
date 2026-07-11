@@ -13,20 +13,20 @@
     --primary-soft: rgba(64, 47, 192, 0.08);
     --border-color: rgba(76, 70, 122, 0.15);
 
-    --success: #10B981;
-    --success-soft: rgba(16, 185, 129, 0.1);
-    --info: #60e3e8;
-    --info-soft: rgba(96, 227, 232, 0.15);
-    --warning: #F59E0B;
-    --warning-soft: rgba(245, 158, 11, 0.1);
+    --success: #059669;
+    --success-soft: rgba(5, 150, 105, 0.1);
+    --info: #0891b2;
+    --info-soft: rgba(8, 145, 178, 0.1);
+    --warning: #d97706;
+    --warning-soft: rgba(217, 119, 6, 0.1);
 
-    /* Product Accent Colors */
+    /* Product Accent Colors - Higher Contrast for Light Mode */
     --accent-elec: #402fc0;
-    --accent-elec-soft: rgba(64, 47, 192, 0.12);
-    --accent-gaz: #60e3e8;
-    --accent-gaz-soft: rgba(96, 227, 232, 0.12);
-    --accent-both: #f251f8;
-    --accent-both-soft: rgba(242, 81, 248, 0.12);
+    --accent-elec-soft: rgba(64, 47, 192, 0.1);
+    --accent-gaz: #0891b2;
+    --accent-gaz-soft: rgba(8, 145, 178, 0.1);
+    --accent-both: #b5179e;
+    --accent-both-soft: rgba(181, 23, 158, 0.1);
 
     --border-radius-sm: 8px;
     --border-radius-md: 12px;
