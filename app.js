@@ -1294,6 +1294,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // 2.5 Add decorative emojis to email body
+        emailBody = emailBody.replace("Je vous confirme la prise en compte de la résiliation", "✅ Je vous confirme la prise en compte de la résiliation");
+        emailBody = emailBody.replace("Je vous confirme la prise en compte de votre demande", "✅ Je vous confirme la prise en compte de votre demande");
+        emailBody = emailBody.replace("J'ai bien reçu votre demande de résiliation", "📥 J'ai bien reçu votre demande de résiliation");
+        emailBody = emailBody.replace("- Pour votre contrat d'électricité :", "⚡ Pour votre contrat d'électricité :");
+        emailBody = emailBody.replace("- Pour votre contrat de gaz :", "🔥 Pour votre contrat de gaz :");
+        emailBody = emailBody.replace("Dans l'attente de votre retour,", "✉️ Dans l'attente de votre retour,");
+        emailBody = emailBody.replace("Je reste à votre entière disposition pour tout renseignement complémentaire.", "🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.");
+
         // 3. Update Preview UI
         emailSubjectInput.value = emailSubject;
         emailBodyInput.value = emailBody;
