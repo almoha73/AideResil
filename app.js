@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function getElecReadingPhrase() {
             if (!isNonCommunicating || !indexProvided) {
-                return "sur la base de la relève de compteur que vous m'avez transmise";
+                return "";
             }
             const meterType = document.querySelector('input[name="elec-meter-type"]:checked').value;
             const option = document.querySelector('input[name="elec-reading-option"]:checked').value;
@@ -342,20 +342,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (option === 'base') {
                     const valBase = readingBaseVal.value.trim() || '[Index Base]';
-                    return `sur la base des relèves que vous m'avez transmises (Index Base : ${valBase}, HPH : ${valHph}, HPB : ${valHpb}, HCH : ${valHch}, HCB : ${valHcb})`;
+                    return `(Index Base : ${valBase}, HPH : ${valHph}, HPB : ${valHpb}, HCH : ${valHch}, HCB : ${valHcb})`;
                 } else {
                     const valHp = readingHpVal.value.trim() || '[Index HP]';
                     const valHc = readingHcVal.value.trim() || '[Index HC]';
-                    return `sur la base des relèves que vous m'avez transmises (Index HP : ${valHp}, HC : ${valHc}, HPH : ${valHph}, HPB : ${valHpb}, HCH : ${valHch}, HCB : ${valHcb})`;
+                    return `(Index HP : ${valHp}, HC : ${valHc}, HPH : ${valHph}, HPB : ${valHpb}, HCH : ${valHch}, HCB : ${valHcb})`;
                 }
             } else {
                 if (option === 'base') {
                     const valBase = readingBaseVal.value.trim() || '[Index Base]';
-                    return `sur la base de la relève que vous m'avez transmise (Index Base : ${valBase})`;
+                    return `(Index Base : ${valBase})`;
                 } else {
                     const valHp = readingHpVal.value.trim() || '[Index Heures Pleines]';
                     const valHc = readingHcVal.value.trim() || '[Index Heures Creuses]';
-                    return `sur la base des relèves que vous m'avez transmises (Index Heures Pleines : ${valHp}, Heures Creuses : ${valHc})`;
+                    return `(Index Heures Pleines : ${valHp}, Heures Creuses : ${valHc})`;
                 }
             }
         }
@@ -461,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         rulesStatusClass = 'status-warning';
                         if (indexProvided) {
                             rulesAppliedText = `Compteur non communicant avec relève. Date passée (${formatLongFrenchDate(requestedDate)}) reprogrammée au jour même soit le ${todayStr}.`;
-                            emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                            emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, sur la base de la relève que vous m'avez transmise ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                         } else {
                             emailSubject = "🚨 Action requise : Résiliation impossible sans votre relève - Contrat d'électricité";
                             const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         rulesStatusClass = 'status-success';
                         if (indexProvided) {
                             rulesAppliedText = `Compteur non communicant avec relève. Résiliation ce jour le ${dateStr}.`;
-                            emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                            emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, sur la base de la relève que vous m'avez transmise ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                         } else {
                             emailSubject = "🚨 Action requise : Résiliation impossible sans votre relève - Contrat d'électricité";
                             const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
@@ -710,7 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isElecToday = reqElecDate.getTime() === today.getTime();
                         if (isElecToday) {
                             if (indexProvided) {
-                                elecExplanationText = `La résiliation sera effective ce jour, le ${dateStr}, ${readingPhrase}.`;
+                                elecExplanationText = `La résiliation sera effective ce jour, le ${dateStr}, sur la base de la relève que vous m'avez transmise ${readingPhrase}.`;
                             } else {
                                 const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
                                 elecExplanationText = `La résiliation sera effective ce jour, le ${dateStr}, ${reqPhrase}.`;
@@ -727,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         effElecDate = today;
                         const todayStr = formatLongFrenchDate(today);
                         if (indexProvided) {
-                            elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${readingPhrase}.`;
+                            elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), sur la base de la relève que vous m'avez transmise ${readingPhrase}.`;
                         } else {
                             const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
                             elecExplanationText = `La résiliation sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${reqPhrase}.`;
@@ -916,7 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             
                             if (isToday || isPast) {
                                 const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
-                                elecReadingClause = `, ${readingText}`;
+                                elecReadingClause = `, sur la base de la relève que vous m'avez transmise ${readingText}`;
                                 if (!indexProvided) {
                                     emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
                                 }
@@ -994,7 +994,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (!indexProvided) {
                                     emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
                                 }
-                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
+                                const readingText = indexProvided ? `sur la base de la relève que vous m'avez transmise ${getElecReadingPhrase()}` : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
 
                                 emailBody = `Je vous confirme la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLa date de résiliation demandée étant dans le passé, je vous informe qu'il n'est pas possible de résilier un contrat de manière rétroactive.\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation de votre contrat d'électricité est effective le jour d'aujourd'hui, soit le ${todayStr}, ${readingText}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz sera effective ${gazEffectivePhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                             } else {
@@ -1022,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (!indexProvided) {
                                     emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
                                 }
-                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
+                                const readingText = indexProvided ? `sur la base de la relève que vous m'avez transmise ${getElecReadingPhrase()}` : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
 
                                 emailBody = `Je vous confirme la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective aujourd'hui, soit le ${todayStr}, ${readingText}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz ne pouvant pas s'effectuer ${reasonStr}, la résiliation sera effective le prochain jour ouvré, ${nextBizPhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                             } else {
@@ -1051,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const isElecToday = reqElecDate.getTime() === today.getTime();
                             if (isElecToday) {
                                 if (indexProvided) {
-                                    elecExplanationText = `la résiliation de votre contrat d'électricité sera effective ce jour, le ${dateStr}, ${readingPhrase}`;
+                                    elecExplanationText = `la résiliation de votre contrat d'électricité sera effective ce jour, le ${dateStr}, sur la base de la relève que vous m'avez transmise ${readingPhrase}`;
                                 } else {
                                     emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
                                     const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
@@ -1069,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             effElecDate = today;
                             const todayStr = formatLongFrenchDate(today);
                             if (indexProvided) {
-                                elecExplanationText = `la résiliation de votre contrat d'électricité sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${readingPhrase}`;
+                                elecExplanationText = `la résiliation de votre contrat d'électricité sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), sur la base de la relève que vous m'avez transmise ${readingPhrase}`;
                             } else {
                                 emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
                                 const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
