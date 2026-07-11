@@ -2,63 +2,63 @@
  * EasyResil Design System
  * ------------------------------------------------------------- */
 
-/* Theme Variables (Default Light Theme) */
+/* Theme Variables (Default Light Theme - Inspired by Gradients.app) */
 :root {
-    --bg-app: #f4f6fa;
+    --bg-app: #e5d9e9;
     --bg-card: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --primary: #4F46E5;
-    --primary-hover: #4338CA;
-    --primary-soft: rgba(79, 70, 229, 0.08);
-    --border-color: #e2e8f0;
+    --text-main: #140534;
+    --text-muted: #4c467a;
+    --primary: #402fc0;
+    --primary-hover: #32239e;
+    --primary-soft: rgba(64, 47, 192, 0.08);
+    --border-color: rgba(76, 70, 122, 0.15);
 
     --success: #10B981;
     --success-soft: rgba(16, 185, 129, 0.1);
-    --info: #3B82F6;
-    --info-soft: rgba(59, 130, 246, 0.1);
+    --info: #60e3e8;
+    --info-soft: rgba(96, 227, 232, 0.15);
     --warning: #F59E0B;
     --warning-soft: rgba(245, 158, 11, 0.1);
 
     /* Product Accent Colors */
-    --accent-elec: #F59E0B;
-    --accent-elec-soft: rgba(245, 158, 11, 0.12);
-    --accent-gaz: #0EA5E9;
-    --accent-gaz-soft: rgba(14, 165, 233, 0.12);
-    --accent-both: #8B5CF6;
-    --accent-both-soft: rgba(139, 92, 246, 0.12);
+    --accent-elec: #402fc0;
+    --accent-elec-soft: rgba(64, 47, 192, 0.12);
+    --accent-gaz: #60e3e8;
+    --accent-gaz-soft: rgba(96, 227, 232, 0.12);
+    --accent-both: #f251f8;
+    --accent-both-soft: rgba(242, 81, 248, 0.12);
 
     --border-radius-sm: 8px;
     --border-radius-md: 12px;
     --border-radius-lg: 16px;
 
-    --shadow-main: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-    --shadow-hover: 0 20px 25px -5px rgb(0 0 0 / 0.07), 0 8px 10px -6px rgb(0 0 0 / 0.07);
+    --shadow-main: 0 4px 6px -1px rgba(20, 5, 52, 0.05), 0 2px 4px -2px rgba(20, 5, 52, 0.05);
+    --shadow-hover: 0 20px 25px -5px rgba(20, 5, 52, 0.07), 0 8px 10px -6px rgba(20, 5, 52, 0.07);
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark Theme Overrides (Inspired by Octopus Energy) */
+/* Dark Theme Overrides (Inspired by Gradients.app) */
 [data-theme="dark"] {
-    --bg-app: #0A151E;
-    --bg-card: #132230;
-    --text-main: #F1F5F9;
-    --text-muted: #8FA0AD;
-    --primary: #FF007F;
-    --primary-hover: #E60072;
-    --primary-soft: rgba(255, 0, 127, 0.15);
-    --border-color: #1B2F40;
+    --bg-app: #140534;
+    --bg-card: #39315a;
+    --text-main: #e5d9e9;
+    --text-muted: #8880a4;
+    --primary: #f251f8;
+    --primary-hover: #d93bdf;
+    --primary-soft: rgba(242, 81, 248, 0.15);
+    --border-color: #4c467a;
 
     --success-soft: rgba(0, 255, 163, 0.2);
-    --info-soft: rgba(13, 128, 216, 0.2);
+    --info-soft: rgba(96, 227, 232, 0.2);
     --warning-soft: rgba(245, 158, 11, 0.2);
 
     /* Product Accent Colors */
-    --accent-elec: #FFBE1A;
-    --accent-elec-soft: rgba(255, 190, 26, 0.15);
-    --accent-gaz: #00F0FF;
-    --accent-gaz-soft: rgba(0, 240, 255, 0.15);
-    --accent-both: #6950FF;
-    --accent-both-soft: rgba(105, 80, 255, 0.15);
+    --accent-elec: #60e3e8;
+    --accent-elec-soft: rgba(96, 227, 232, 0.2);
+    --accent-gaz: #f251f8;
+    --accent-gaz-soft: rgba(242, 81, 248, 0.2);
+    --accent-both: #9e8dfc;
+    --accent-both-soft: rgba(158, 141, 252, 0.2);
 
     --shadow-main: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
     --shadow-hover: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
@@ -923,25 +923,25 @@ span.flatpickr-weekday {
     cursor: pointer;
     user-select: none;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(20, 5, 52, 0.03);
+    border: 1px solid rgba(20, 5, 52, 0.08);
     border-radius: 12px;
     transition: all 0.2s;
 }
 
 .keep-active-container:hover {
     border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(20, 5, 52, 0.06);
 }
 
-body.light-mode .keep-active-container {
-    background: rgba(0, 0, 0, 0.02);
-    border-color: rgba(0, 0, 0, 0.08);
+[data-theme="dark"] .keep-active-container {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
-body.light-mode .keep-active-container:hover {
+[data-theme="dark"] .keep-active-container:hover {
     border-color: var(--primary);
-    background: rgba(0, 0, 0, 0.04);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 /* How To Info Banner */
