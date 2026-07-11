@@ -826,13 +826,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const effGazDateStr = formatLongFrenchDate(effGazDate);
 
-                const proposedElecDate = (effGazDate >= today) ? effGazDate : today;
+                const proposedElecDate = (reqGazDate >= today) ? reqGazDate : today;
                 const proposedElecDateStr = formatLongFrenchDate(proposedElecDate);
 
                 let proposedElecPhrase = '';
-                if (effGazDate.getTime() === proposedElecDate.getTime()) {
-                    proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à cette même date (${effGazDateStr}) ?`;
-                } else if (effGazDate.getTime() === today.getTime() || effGazDate < today) {
+                if (reqGazDate.getTime() === proposedElecDate.getTime()) {
+                    proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à cette même date (${formatLongFrenchDate(reqGazDate)}) ?`;
+                } else if (reqGazDate < today) {
                     proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à la date du jour (${proposedElecDateStr}) ?`;
                 } else {
                     proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à la date initialement souhaitée (${proposedElecDateStr}) ?`;
