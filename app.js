@@ -472,9 +472,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             rulesAppliedText = `Compteur non communicant avec relève. Date passée (${formatLongFrenchDate(requestedDate)}) reprogrammée au jour même soit le ${todayStr}.`;
                             emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                         } else {
-                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                            emailSubject = "🚨 Action requise : Résiliation impossible sans votre relève - Contrat d'électricité";
+                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
                             rulesAppliedText = `Compteur non communicant sans relève. Date passée reprogrammée au jour même sous réserve de relève.`;
-                            emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, ${reqPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                            emailBody = `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nLa date de résiliation demandée étant dans le passé, et votre compteur étant non communicant, la résiliation sera effective ce jour, le ${todayStr}, ${reqPhrase}.`;
                         }
                     } else if (isToday) {
                         const dateStr = formatLongFrenchDate(requestedDate);
@@ -483,9 +484,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             rulesAppliedText = `Compteur non communicant avec relève. Résiliation ce jour le ${dateStr}.`;
                             emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, ${readingPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                         } else {
-                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                            emailSubject = "🚨 Action requise : Résiliation impossible sans votre relève - Contrat d'électricité";
+                            const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
                             rulesAppliedText = `Compteur non communicant sans relève. Résiliation ce jour sous réserve de relève.`;
-                            emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, ${reqPhrase}.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                            emailBody = `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCelle-ci sera effective ce jour, le ${dateStr}, ${reqPhrase}.`;
                         }
                     } else { // isFuture
                         const dateStr = formatLongFrenchDate(requestedDate);
@@ -584,7 +586,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     rulesAppliedText = `Rendez-vous GRDF nécessaire. Résiliation effective le jour de l'intervention (${rdvDateStr}).`;
                     rulesStatusClass = 'status-warning';
 
-                    emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat de gaz (PCE n° ${pceGaz}).\n\nLa résiliation sera effective le ${rdvDateStr}, à la date de votre rendez-vous technicien (celui-ci est obligatoire et votre présence est requise).\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                    const requestedDateStr = requestedDate ? formatLongFrenchDate(requestedDate) : "";
+                    const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                    emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat de gaz (PCE n° ${pceGaz}).\n\nLa résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                 } else {
                     if (isFuture) {
                         const isRequestedBizDay = isBusinessDay(requestedDate);
@@ -799,7 +803,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isRdvNeeded) {
                     effGazDate = rdvDate || reqGazDate || today;
                     const rdvDateStr = rdvDate ? formatLongFrenchDate(rdvDate) : "[Date de RDV]";
-                    gazExplanationText = `La résiliation sera effective le ${rdvDateStr}, à la date de votre rendez-vous technicien (celui-ci est obligatoire et votre présence est requise).`;
+                    const requestedDateStr = reqGazDate ? formatLongFrenchDate(reqGazDate) : "";
+                    const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                    gazExplanationText = `La résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu de faire une résiliation à distance.`;
                 } else {
                     if (reqGazDate > today) {
                         if (isBusinessDay(reqGazDate)) {
@@ -873,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rdvTimeStr = (gazAppointmentTimeInput.value === 'custom'
                         ? gazAppointmentTimeCustomInput.value.trim()
                         : gazAppointmentTimeInput.value.trim()) || "[Plage horaire]";
-                    const appointmentPhrase = `Ce rendez-vous est programmé sur la plage horaire : ${rdvTimeStr}. Si cette date ne vous convient pas, je vous invite à revenir vers moi ou à la modifier directement depuis le SMS envoyé par GRDF.\nVous devez impérativement être présent ou vous faire représenter. Le jour de l'intervention, je vous demande de répondre à tous vos appels, car les techniciens appellent généralement en numéro masqué ou avec un numéro commençant par 09. Si vous ne répondez pas, ils ne se déplaceront pas, la résiliation ne pourra pas être effectuée et un déplacement vain risquera de vous être facturé.`;
+                    const appointmentPhrase = `Ce rendez-vous est programmé sur la plage horaire : ${rdvTimeStr}. Si cette date ne vous convient pas, je vous invite à la modifier directement depuis le SMS envoyé par GRDF ou à les appeler directement pour faire le point au numéro suivant afin d'en savoir plus et pour déplacer le rendez-vous si nécessaire : 09 69 36 35 34.\nVous devez impérativement être présent ou vous faire représenter. Le jour de l'intervention, je vous demande de répondre à tous vos appels, car les techniciens appellent généralement en numéro masqué ou avec un numéro commençant par 09. Si vous ne répondez pas, ils ne se déplaceront pas, la résiliation ne pourra pas être effectuée et un déplacement vain risquera de vous être facturé.`;
                     
                     gazDetailParagraph = `Pour votre contrat de gaz : ${gazExplanationText}\n\n${appointmentPhrase}\n\nVotre facture de clôture de gaz vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                     isAppointmentAlreadyInjected = true;
@@ -918,14 +924,20 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                             
                             if (isToday || isPast) {
-                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
                                 elecReadingClause = `, ${readingText}`;
+                                if (!indexProvided) {
+                                    emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
+                                }
                             } else {
                                 elecReadingClause = `, ${reqPhrase}.${readingNotice}`;
                             }
                         }
 
-                        emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation sera effective le ${dateElecStr}${elecReadingClause}.\n- Pour votre contrat de gaz : la résiliation sera effective le ${rdvDateStr}, à la date de votre rendez-vous technicien (celui-ci est obligatoire et votre présence est requise).\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
+                        const requestedDateStr = requestedDate ? formatLongFrenchDate(requestedDate) : "";
+                        const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+
+                        emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation sera effective le ${dateElecStr}${elecReadingClause}.\n- Pour votre contrat de gaz : la résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                     } else {
                         if (isFuture) {
                             const isRequestedBizDay = isBusinessDay(requestedDate);
@@ -988,7 +1000,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 rulesAppliedText = `Date passée (${formatLongFrenchDate(requestedDate)}). Élec résilié ce jour (${todayStr}) (compteur non communicant). Gaz décalé ${gazEffectivePhrase}.`;
                                 rulesStatusClass = 'status-warning';
 
-                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                                if (!indexProvided) {
+                                    emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
+                                }
+                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
 
                                 emailBody = `Je vous confirme la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLa date de résiliation demandée étant dans le passé, je vous informe qu'il n'est pas possible de résilier un contrat de manière rétroactive.\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation de votre contrat d'électricité est effective le jour d'aujourd'hui, soit le ${todayStr}, ${readingText}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz sera effective ${gazEffectivePhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                             } else {
@@ -1013,7 +1028,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 rulesAppliedText = `Date demandée aujourd'hui (${formatLongFrenchDate(requestedDate)}). Élec résilié aujourd'hui (${todayStr}) (compteur non communicant). Gaz décalé au prochain jour ouvré (${nextBizStr}).`;
                                 rulesStatusClass = 'status-warning';
 
-                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                                if (!indexProvided) {
+                                    emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
+                                }
+                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
 
                                 emailBody = `Je vous confirme la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation de votre contrat d'électricité est effective aujourd'hui, soit le ${todayStr}, ${readingText}.\n- Pour votre contrat de gaz : la résiliation de votre contrat de gaz ne pouvant pas s'effectuer ${reasonStr}, la résiliation sera effective le prochain jour ouvré, ${nextBizPhrase}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                             } else {
@@ -1044,7 +1062,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (indexProvided) {
                                     elecExplanationText = `la résiliation de votre contrat d'électricité sera effective ce jour, le ${dateStr}, ${readingPhrase}`;
                                 } else {
-                                    const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                                    emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
+                                    const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
                                     elecExplanationText = `la résiliation de votre contrat d'électricité sera effective ce jour, le ${dateStr}, ${reqPhrase}`;
                                 }
                             } else {
@@ -1061,7 +1080,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (indexProvided) {
                                 elecExplanationText = `la résiliation de votre contrat d'électricité sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${readingPhrase}`;
                             } else {
-                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. Je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite.");
+                                emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
+                                const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
                                 elecExplanationText = `la résiliation de votre contrat d'électricité sera effective en date d'aujourd'hui, soit le ${todayStr} (la date demandée étant dans le passé), ${reqPhrase}`;
                             }
                         }
@@ -1088,7 +1108,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (isRdvNeeded) {
                         effGazDate = rdvDate || reqGazDate || today;
                         const rdvDateStr = rdvDate ? formatLongFrenchDate(rdvDate) : "[Date de RDV]";
-                        gazExplanationText = `la résiliation sera effective le ${rdvDateStr}, à la date de votre rendez-vous technicien (celui-ci est obligatoire et votre présence est requise)`;
+                        const requestedDateStr = reqGazDate ? formatLongFrenchDate(reqGazDate) : "";
+                        const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                        gazExplanationText = `la résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance`;
                     } else {
                         if (reqGazDate > today) {
                             if (isBusinessDay(reqGazDate)) {
@@ -1138,7 +1160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? gazAppointmentTimeCustomInput.value.trim()
                 : gazAppointmentTimeInput.value.trim()) || "[Plage horaire]";
             
-            const appointmentPhrase = `Ce rendez-vous est programmé sur la plage horaire : ${rdvTimeStr}. Si cette date ne vous convient pas, je vous invite à revenir vers moi ou à la modifier directement depuis le SMS envoyé par GRDF.\nVous devez impérativement être présent ou vous faire représenter. Le jour de l'intervention, je vous demande de répondre à tous vos appels, car les techniciens appellent généralement en numéro masqué ou avec un numéro commençant par 09. Si vous ne répondez pas, ils ne se déplaceront pas, la résiliation ne pourra pas être effectuée et un déplacement vain risquera de vous être facturé.`;
+            const appointmentPhrase = `Ce rendez-vous est programmé sur la plage horaire : ${rdvTimeStr}. Si cette date ne vous convient pas, je vous invite à la modifier directement depuis le SMS envoyé par GRDF ou à les appeler directement pour faire le point au numéro suivant afin d'en savoir plus et pour déplacer le rendez-vous si nécessaire : 09 69 36 35 34.\nVous devez impérativement être présent ou vous faire représenter. Le jour de l'intervention, je vous demande de répondre à tous vos appels, car les techniciens appellent généralement en numéro masqué ou avec un numéro commençant par 09. Si vous ne répondez pas, ils ne se déplaceront pas, la résiliation ne pourra pas être effectuée et un déplacement vain risquera de vous être facturé.`;
 
             const billPhrases = [
                 "Vos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.",
@@ -1183,6 +1205,101 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     emailBody = emailBody.replace(searchPhrase, `${appointmentPhrase}\n\n${searchPhrase}`);
                 }
+            }
+        }
+
+        // Update closing sentence if waiting for electric reading urgently
+        if (isNonCommunicating && !indexProvided) {
+            let isPastOrToday = false;
+            if (energyType === 'elec') {
+                const dateVal = cancelDateElecInput.value;
+                if (dateVal) {
+                    const requestedDate = parseLocalDate(dateVal);
+                    requestedDate.setHours(0, 0, 0, 0);
+                    if (requestedDate <= today) {
+                        isPastOrToday = true;
+                    }
+                }
+            } else if (energyType === 'both') {
+                const dateElecVal = cancelDateBothInput.value || cancelDateElecInput.value;
+                if (dateElecVal) {
+                    const requestedDate = parseLocalDate(dateElecVal);
+                    requestedDate.setHours(0, 0, 0, 0);
+                    if (requestedDate <= today) {
+                        isPastOrToday = true;
+                    }
+                }
+            }
+            if (isPastOrToday) {
+                emailBody = emailBody.replace(
+                    "Je reste à votre entière disposition pour tout renseignement complémentaire.",
+                    "Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire."
+                );
+            }
+        }
+
+        // Update subject and body if waiting for a future electric reading
+        if (isNonCommunicating) {
+            let isFuture = false;
+            if (energyType === 'elec') {
+                const dateVal = cancelDateElecInput.value;
+                if (dateVal) {
+                    const requestedDate = parseLocalDate(dateVal);
+                    requestedDate.setHours(0, 0, 0, 0);
+                    if (requestedDate > today) {
+                        isFuture = true;
+                    }
+                }
+            } else if (energyType === 'both') {
+                const dateElecVal = cancelDateBothInput.value || cancelDateElecInput.value;
+                if (dateElecVal) {
+                    const requestedDate = parseLocalDate(dateElecVal);
+                    requestedDate.setHours(0, 0, 0, 0);
+                    if (requestedDate > today) {
+                        isFuture = true;
+                    }
+                }
+            }
+
+            if (isFuture) {
+                // Update Subject
+                if (energyType === 'elec') {
+                    emailSubject = "⚠️ Action requise : Relève de compteur à fournir - Contrat d'électricité";
+                } else if (energyType === 'both') {
+                    emailSubject = "⚠️ Action requise : Relève de compteur à fournir - Vos contrats d'électricité et de gaz";
+                }
+
+                // Update Body introduction
+                emailBody = emailBody.replace(
+                    `Je vous confirme la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).`,
+                    `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).`
+                );
+                emailBody = emailBody.replace(
+                    `Je vous confirme la prise en compte de la résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).`,
+                    `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).`
+                );
+                emailBody = emailBody.replace(
+                    `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).`,
+                    `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).`
+                );
+                emailBody = emailBody.replace(
+                    `Je vous confirme la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).`,
+                    `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).`
+                );
+
+                // Remove Invoice sentences
+                emailBody = emailBody.replace(
+                    "\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.",
+                    ""
+                );
+                emailBody = emailBody.replace(
+                    "\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.",
+                    ""
+                );
+                emailBody = emailBody.replace(
+                    "\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations.",
+                    ""
+                );
             }
         }
 
