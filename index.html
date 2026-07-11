@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AideResil - Générateur de Mails de Résiliation</title>
+    <title>EasyResil - Générateur interactif de snippets de résiliation</title>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='6' fill='url(%23grad)'/%3E%3Cpath d='M12 4L4 8L12 12L20 8L12 4Z' stroke='white' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M4 12L12 16L20 12' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M4 16L12 20L20 16' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234F46E5'/%3E%3Cstop offset='100%25' stop-color='%238B5CF6'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E">
     <!-- Fonts -->
@@ -36,8 +36,8 @@
                     </svg>
                 </div>
                 <div class="brand-text">
-                    <h1>AideResil</h1>
-                    <p>Assistant de résiliation Gaz & Électricité</p>
+                    <h1>EasyResil</h1>
+                    <p>Générateur interactif de snippets de résiliation</p>
                 </div>
             </div>
 
@@ -48,6 +48,23 @@
                 </button>
             </div>
         </header>
+
+        <!-- How To Banner -->
+        <div class="info-banner card">
+            <div class="info-banner-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </div>
+            <div class="info-banner-content">
+                <span class="info-banner-badge">Mode d'emploi Magic Ink</span>
+                <p class="info-banner-text">
+                    Le corps du mail doit être copié dans <strong>Magic Ink</strong> pour que le bonjour, la signature, le PDL et le PCE se remplissent automatiquement.
+                </p>
+            </div>
+        </div>
 
         <main class="app-content">
             <!-- Left Panel: Configuration Form -->
@@ -110,7 +127,7 @@
                         <input type="checkbox" id="keep-active-other"
                             style="accent-color: var(--primary); width: 18px; height: 18px; border-radius: 4px; cursor: pointer;">
                         <span style="font-size: 0.875rem; font-weight: 500; line-height: 1.4;"
-                            id="keep-active-label">Conserver l'autre offre active</span>
+                            id="keep-active-label">Le client détient un autre contrat à la même adresse qui doit rester actif (non résilié)</span>
                     </label>
                 </div>
 

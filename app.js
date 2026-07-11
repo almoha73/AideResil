@@ -1370,7 +1370,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (energyType === 'elec') {
             groupKeepActive.classList.remove('hide');
-            keepActiveLabel.textContent = "Le client détient aussi un contrat de gaz et souhaite le conserver actif (ne résilier que l'électricité)";
+            keepActiveLabel.textContent = "Le client demande la résiliation de son contrat d'électricité, mais détient à la même adresse un contrat de gaz pour lequel il n'a pas demandé de résiliation.";
             groupContractElec.classList.remove('hide');
             groupDateElec.classList.remove('hide');
             groupDateGaz.classList.add('hide');
@@ -1391,7 +1391,7 @@ document.addEventListener('DOMContentLoaded', () => {
             groupGazAppointmentTimeCustom.classList.add('hide');
         } else if (energyType === 'gaz') {
             groupKeepActive.classList.remove('hide');
-            keepActiveLabel.textContent = "Le client détient aussi un contrat d'électricité et souhaite le conserver actif (ne résilier que le gaz)";
+            keepActiveLabel.textContent = "Le client demande la résiliation de son contrat de gaz, mais détient à la même adresse un contrat d'électricité pour lequel il n'a pas demandé de résiliation.";
             groupContractGaz.classList.remove('hide');
             groupDateGaz.classList.remove('hide');
             groupDateElec.classList.add('hide');
