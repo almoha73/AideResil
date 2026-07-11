@@ -59,12 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Quick buttons
     const btnTodayElec = document.getElementById('btn-today-elec');
     const btnTomorrowElec = document.getElementById('btn-tomorrow-elec');
-    const btnNextMondayElec = document.getElementById('btn-next-monday-elec');
     const btnClearElec = document.getElementById('btn-clear-elec');
 
     const btnTodayGaz = document.getElementById('btn-today-gaz');
     const btnTomorrowGaz = document.getElementById('btn-tomorrow-gaz');
-    const btnNextMondayGaz = document.getElementById('btn-next-monday-gaz');
     const btnClearGaz = document.getElementById('btn-clear-gaz');
 
     const btnCopySubject = document.getElementById('btn-copy-subject');
@@ -272,14 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function getNextMonday() {
-        const d = new Date();
-        const currentDay = d.getDay();
-        // Sunday is 0, Monday is 1, and so on.
-        const daysUntilNextMonday = currentDay === 0 ? 1 : 8 - currentDay;
-        d.setDate(d.getDate() + daysUntilNextMonday);
-        return d;
-    }
 
     function formatLongFrenchDate(date) {
         return new Intl.DateTimeFormat('fr-FR', {
@@ -1596,10 +1586,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cancellationDatePickerElec.setDate(tomorrow, true);
     });
 
-    btnNextMondayElec.addEventListener('click', () => {
-        cancellationDatePickerElec.setDate(getNextMonday(), true);
-    });
-
     // Date Shortcut Buttons Gaz
     btnTodayGaz.addEventListener('click', () => {
         cancellationDatePickerGaz.setDate(new Date(), true);
@@ -1609,10 +1595,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         cancellationDatePickerGaz.setDate(tomorrow, true);
-    });
-
-    btnNextMondayGaz.addEventListener('click', () => {
-        cancellationDatePickerGaz.setDate(getNextMonday(), true);
     });
 
     // Copy Event Handlers
