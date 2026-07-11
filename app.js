@@ -776,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 emailSubject = "⚠️ Demande de confirmation - Date de résiliation de vos contrats d'électricité et de gaz";
-                emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat d'électricité : ${elecExplanationText} Votre facture de clôture d'électricité vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.\n\nCependant, la date souhaitée pour votre contrat de gaz n'a pas été précisée. ${proposedGazPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat d'électricité : ${elecExplanationText} Votre facture de clôture d'électricité vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.\n\n⚠️ Cependant, la date souhaitée pour votre contrat de gaz n'a pas été précisée. ${proposedGazPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                 rulesAppliedText = `Date électricité renseignée (${formatLongFrenchDate(reqElecDate)}), date gaz manquante. Confirmation pour l'électricité et demande de précision pour le gaz générées (post-report si week-end/aujourd'hui).`;
                 rulesStatusClass = 'status-warning';
             }
@@ -878,7 +878,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 emailSubject = `⚠️ ${subjectTag}Demande de confirmation - Date de résiliation de vos contrats d'électricité et de gaz`;
-                emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\n${gazDetailParagraph}\n\nCependant, la date souhaitée pour votre contrat d'électricité n'a pas été précisée. ${proposedElecPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\n${gazDetailParagraph}\n\n⚠️ Cependant, la date souhaitée pour votre contrat d'électricité n'a pas été précisée. ${proposedElecPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                 rulesAppliedText = `Date gaz renseignée (${formatLongFrenchDate(reqGazDate)}), date électricité manquante. Confirmation pour le gaz et demande de précision pour l'électricité générées.`;
                 rulesStatusClass = 'status-warning';
             }
