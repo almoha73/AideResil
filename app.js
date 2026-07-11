@@ -283,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatLongFrenchDate(date) {
         return new Intl.DateTimeFormat('fr-FR', {
+            weekday: 'long',
             day: 'numeric',
             month: 'long',
             year: 'numeric'
