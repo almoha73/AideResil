@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         let readingNotice = '';
                         if (indexProvided) {
-                            readingNotice = `\n- L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
+                            readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                         }
 
                         emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nVotre compteur étant non communicant, je vous informe que je résilierai votre contrat le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
@@ -719,7 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
                             let readingNotice = '';
                             if (indexProvided) {
-                                readingNotice = `\n- L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
+                                readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                             }
                             elecExplanationText = `Votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}`;
                         }
@@ -911,7 +911,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
                             let readingNotice = '';
                             if (indexProvided) {
-                                readingNotice = `\n- L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
+                                readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                             }
                             
                             if (isToday || isPast) {
@@ -941,7 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                     let readingNotice = '';
                                     if (indexProvided) {
-                                        readingNotice = `\n- L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
+                                        readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                                     }
 
                                     emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : la résiliation sera effective le ${dateStr}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
@@ -966,7 +966,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                     let readingNotice = '';
                                     if (indexProvided) {
-                                        readingNotice = `\n- L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
+                                        readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                                     }
 
                                     emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${requestedDateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : ${bulletPhrase}\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
@@ -1061,7 +1061,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const reqPhrase = getElecReadingRequestPhrase('subjunctive', "à cette date");
                                 let readingNotice = '';
                                 if (indexProvided) {
-                                    readingNotice = `\n- L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
+                                    readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                                 }
                                 elecExplanationText = `votre compteur étant non communicant, la résiliation de votre contrat d'électricité sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}`;
                             }
