@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const isEffElecToday = effElecDate.getTime() === today.getTime();
 
                     if (isBizDayForGaz && !isEffElecToday) {
-                        emailBody += `\n\nPar ailleurs, je vous confirme que votre contrat de gaz (PCE n° ${pceGaz}) reste actif et n'est pas impacté par cette demande. Si vous souhaitez également procéder à sa résiliation, merci de me l'indiquer (et de me préciser si celle-ci doit être effectuée à la même date (${effElecDateStr})). Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
+                        emailBody += `\n\n📌 Par ailleurs, je vous confirme que votre contrat de gaz (PCE n° ${pceGaz}) reste actif et n'est pas impacté par cette demande. Si vous souhaitez également procéder à sa résiliation, merci de me l'indiquer (et de me préciser si celle-ci doit être effectuée à la même date (${effElecDateStr})). Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
                     } else if (isEffElecToday) {
                         const nextBizStr = formatLongFrenchDate(nextBusinessDay);
                         const tomorrow = new Date(today);
@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const nextBizPhrase = isTomorrow ? `soit demain, le ${nextBizStr}` : `soit le ${nextBizStr}`;
                         const reasonStr = getGazPostponementReason(today, nextBusinessDay);
 
-                        emailBody += `\n\nPar ailleurs, je vous confirme que votre contrat de gaz (PCE n° ${pceGaz}) reste actif et n'est pas impacté par cette demande. Si votre souhait est également de le résilier à la même date, la résiliation du contrat de gaz ne pouvant pas s'effectuer ${reasonStr}, celle-ci prendra effet le prochain jour ouvré, ${nextBizPhrase}. Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
+                        emailBody += `\n\n📌 Par ailleurs, je vous confirme que votre contrat de gaz (PCE n° ${pceGaz}) reste actif et n'est pas impacté par cette demande. Si votre souhait est également de le résilier à la même date, la résiliation du contrat de gaz ne pouvant pas s'effectuer ${reasonStr}, celle-ci prendra effet le prochain jour ouvré, ${nextBizPhrase}. Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
                     } else {
                         const proposedGazDate = getClosestBusinessDay(effElecDate);
                         const proposedGazDateStr = formatLongFrenchDate(proposedGazDate);
@@ -539,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             0: 'dimanche'
                         };
                         const reasonStr = reasons[dayOfWeek] || 'jour férié';
-                        emailBody += `\n\nPar ailleurs, je vous confirme que votre contrat de gaz (PCE n° ${pceGaz}) reste actif et n'est pas impacté par cette demande. Si votre souhait est également de le résilier à la même date, la résiliation du contrat de gaz ne pouvant pas s'effectuer un ${reasonStr}, celle-ci prendra effet le prochain jour ouvré, soit le ${proposedGazDateStr}. Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
+                        emailBody += `\n\n📌 Par ailleurs, je vous confirme que votre contrat de gaz (PCE n° ${pceGaz}) reste actif et n'est pas impacté par cette demande. Si votre souhait est également de le résilier à la même date, la résiliation du contrat de gaz ne pouvant pas s'effectuer un ${reasonStr}, celle-ci prendra effet le prochain jour ouvré, soit le ${proposedGazDateStr}. Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
                     }
                     rulesAppliedText += " Offre de gaz maintenue active.";
                 }
@@ -653,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         proposedElecPhrase = `à la date initialement souhaitée (${proposedElecDateStr})`;
                     }
 
-                    emailBody += `\n\nPar ailleurs, je vous confirme que votre contrat d'électricité (PDL n° ${pdlElec}) reste actif et n'est pas impacté par cette demande. Si vous souhaitez également procéder à sa résiliation, merci de me l'indiquer (et de me préciser si celle-ci doit être effectuée ${proposedElecPhrase}). Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
+                    emailBody += `\n\n📌 Par ailleurs, je vous confirme que votre contrat d'électricité (PDL n° ${pdlElec}) reste actif et n'est pas impacté par cette demande. Si vous souhaitez également procéder à sa résiliation, merci de me l'indiquer (et de me préciser si celle-ci doit être effectuée ${proposedElecPhrase}). Dans l'attente de votre confirmation à ce sujet, veuillez noter que sans réponse de votre part, ce contrat restera actif.`;
                     rulesAppliedText += " Offre d'électricité maintenue active.";
                 }
 
