@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelDateGazInput = document.getElementById('cancel-date-gaz');
     const contractElecInput = document.getElementById('contract-elec');
     const contractGazInput = document.getElementById('contract-gaz');
+    const commissioningInProgress = document.getElementById('commissioning-in-progress');
+    const labelDateElec = document.getElementById('label-date-elec');
+    const labelDateGaz = document.getElementById('label-date-gaz');
 
     // Contract visibility groups
     const groupContractElec = document.getElementById('group-contract-elec');
@@ -322,6 +325,90 @@ document.addEventListener('DOMContentLoaded', () => {
         const energyType = document.querySelector('input[name="energy-type"]:checked').value;
         const pdlElec = contractElecInput.value.trim() || '[PDL]';
         const pceGaz = contractGazInput.value.trim() || '[PCE]';
+
+        if (commissioningInProgress.checked) {
+            let emailSubject = '';
+            let emailBody = '';
+            let rulesAppliedText = '';
+            let rulesStatusClass = 'status-success';
+
+            if (energyType === 'elec') {
+                const dateVal = cancelDateElecInput.value;
+                if (!dateVal) {
+                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat d'électricité";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date afin que je puisse faire le nécessaire ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = "Date de mise en service électricité manquante.";
+                    rulesStatusClass = 'status-warning';
+                } else {
+                    const reqDate = parseLocalDate(dateVal);
+                    const dateStr = formatLongFrenchDate(reqDate);
+                    emailSubject = "Information : Mise en service en cours - Contrat d'électricité";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCependant, je constate qu'une mise en service est déjà en cours pour le ${dateStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = `Mise en service en cours le ${dateStr}. Résiliation automatique.`;
+                }
+            } else if (energyType === 'gaz') {
+                const dateVal = cancelDateGazInput.value;
+                if (!dateVal) {
+                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat de gaz";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat de gaz (PCE n° ${pceGaz}).\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date afin que je puisse faire le nécessaire ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = "Date de mise en service gaz manquante.";
+                    rulesStatusClass = 'status-warning';
+                } else {
+                    const reqDate = parseLocalDate(dateVal);
+                    const dateStr = formatLongFrenchDate(reqDate);
+                    emailSubject = "Information : Mise en service en cours - Contrat de gaz";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat de gaz (PCE n° ${pceGaz}).\n\nCependant, je constate qu'une mise en service est déjà en cours pour le ${dateStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = `Mise en service en cours le ${dateStr}. Résiliation automatique.`;
+                }
+            } else if (energyType === 'both') {
+                const dateElecVal = cancelDateElecInput.value;
+                const dateGazVal = cancelDateGazInput.value;
+
+                if (!dateElecVal && !dateGazVal) {
+                    emailSubject = "⚠️ Action requise : Date de mise en service de vos contrats d'électricité et de gaz";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date (ou les dates respectives si elles diffèrent) afin que je puisse faire le nécessaire ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = "Dates de mise en service électricité et gaz manquantes.";
+                    rulesStatusClass = 'status-warning';
+                } else if (dateElecVal && !dateGazVal) {
+                    const reqElecDate = parseLocalDate(dateElecVal);
+                    const dateElecStr = formatLongFrenchDate(reqElecDate);
+                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat de gaz";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat d'électricité, je constate qu'une mise en service est déjà en cours pour le ${dateElecStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n⚠️ Cependant, vous n'avez pas indiqué la date de mise en service pour votre contrat de gaz. Pourriez-vous me la communiquer ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = `Mise en service électricité en cours le ${dateElecStr}, date gaz manquante.`;
+                    rulesStatusClass = 'status-warning';
+                } else if (!dateElecVal && dateGazVal) {
+                    const reqGazDate = parseLocalDate(dateGazVal);
+                    const dateGazStr = formatLongFrenchDate(reqGazDate);
+                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat d'électricité";
+                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat de gaz, je constate qu'une mise en service est déjà en cours pour le ${dateGazStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n⚠️ Cependant, vous n'avez pas indiqué la date de mise en service pour votre contrat d'électricité. Pourriez-vous me la communiquer ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    rulesAppliedText = `Mise en service gaz en cours le ${dateGazStr}, date électricité manquante.`;
+                    rulesStatusClass = 'status-warning';
+                } else {
+                    const reqElecDate = parseLocalDate(dateElecVal);
+                    const reqGazDate = parseLocalDate(dateGazVal);
+                    const dateElecStr = formatLongFrenchDate(reqElecDate);
+                    const dateGazStr = formatLongFrenchDate(reqGazDate);
+
+                    emailSubject = "Information : Mise en service en cours - Contrats d'électricité et de gaz";
+                    if (dateElecVal === dateGazVal) {
+                        emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCependant, je constate qu'une mise en service est déjà en cours pour le ${dateElecStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                        rulesAppliedText = `Mise en service en cours le ${dateElecStr} pour les deux énergies. Résiliation automatique.`;
+                    } else {
+                        emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités de résiliation sont les suivantes :\n⚡ Pour votre contrat d'électricité : je constate qu'une mise en service est déjà en cours pour le ${dateElecStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n🔥 Pour votre contrat de gaz : je constate qu'une mise en service est déjà en cours pour le ${dateGazStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                        rulesAppliedText = `Mises en service en cours le ${dateElecStr} (élec) et le ${dateGazStr} (gaz). Résiliation automatique.`;
+                    }
+                }
+            }
+
+            emailSubjectInput.value = emailSubject;
+            emailBodyInput.value = emailBody;
+
+            rulesTitle.textContent = energyType === 'both' ? 'Règles appliquées (Élec + Gaz)' :
+                energyType === 'elec' ? 'Règles appliquées (Électricité)' : 'Règles appliquées (Gaz)';
+            rulesDescription.textContent = rulesAppliedText;
+            rulesBanner.className = `rules-feedback card ${rulesStatusClass}`;
+            return;
+        }
 
         const isNonCommunicating = meterNonCommunicating.checked;
         const indexProvided = elecReadingProvided.checked;
@@ -772,7 +859,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const reasonStr = reasons[dayOfWeek] || 'jour férié';
                     proposedGazPhrase = `Si votre souhait est également de le résilier à la même date, la résiliation du contrat de gaz ne pouvant pas s'effectuer un ${reasonStr}, celle-ci prendra effet le prochain jour ouvré, soit le ${proposedGazDateStr}.`;
                 } else {
-                    proposedGazPhrase = `Souhaitez-vous que la résiliation de votre contrat de gaz soit également effectuée à cette même date (${effElecDateStr}) ?`;
+                    proposedGazPhrase = `Souhaitez-vous que la résiliation de votre contrat de gaz soit également effectuée à la date initialement demandée (${effElecDateStr}) ?`;
                 }
 
                 emailSubject = "⚠️ Demande de confirmation - Date de résiliation de vos contrats d'électricité et de gaz";
@@ -831,7 +918,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let proposedElecPhrase = '';
                 if (reqGazDate.getTime() === proposedElecDate.getTime()) {
-                    proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à cette même date (${formatLongFrenchDate(reqGazDate)}) ?`;
+                    proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à la date initialement demandée (${formatLongFrenchDate(reqGazDate)}) ?`;
                 } else if (reqGazDate < today) {
                     proposedElecPhrase = `Souhaitez-vous que la résiliation de votre contrat d'électricité soit également effectuée à la date du jour (${proposedElecDateStr}) ?`;
                 } else {
@@ -1367,72 +1454,114 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateContractInputVisibility() {
         const energyType = document.querySelector('input[name="energy-type"]:checked').value;
         const keepActive = keepActiveOther.checked;
+        const isCommInProgress = commissioningInProgress.checked;
+
+        // Reset labels to default first
+        labelDateElec.textContent = "Date de résiliation Électricité :";
+        labelDateGaz.textContent = "Date de résiliation Gaz :";
 
         if (energyType === 'elec') {
-            groupKeepActive.classList.remove('hide');
-            keepActiveLabel.textContent = "Le client demande la résiliation de son contrat d'électricité, mais détient à la même adresse un contrat de gaz pour lequel il n'a pas demandé de résiliation.";
-            groupContractElec.classList.remove('hide');
-            groupDateElec.classList.remove('hide');
-            groupDateGaz.classList.add('hide');
-            if (keepActive) {
-                groupContractGaz.classList.remove('hide');
-            } else {
-                groupContractGaz.classList.add('hide');
-            }
-            groupElecMeter.classList.remove('hide');
-
-            // Hide Gaz appointment
-            groupGazAppointment.classList.add('hide');
-            gazAppointmentNeeded.checked = false;
-            groupGazAppointmentDetails.classList.add('hide');
-            gazAppointmentDatePicker.clear();
-            gazAppointmentTimeInput.value = '';
-            gazAppointmentTimeCustomInput.value = '';
-            groupGazAppointmentTimeCustom.classList.add('hide');
-        } else if (energyType === 'gaz') {
-            groupKeepActive.classList.remove('hide');
-            keepActiveLabel.textContent = "Le client demande la résiliation de son contrat de gaz, mais détient à la même adresse un contrat d'électricité pour lequel il n'a pas demandé de résiliation.";
-            groupContractGaz.classList.remove('hide');
-            groupDateGaz.classList.remove('hide');
-            groupDateElec.classList.add('hide');
-            if (keepActive) {
+            if (isCommInProgress) {
+                groupKeepActive.classList.add('hide');
                 groupContractElec.classList.remove('hide');
+                groupContractGaz.classList.add('hide');
+                groupDateElec.classList.remove('hide');
+                groupDateGaz.classList.add('hide');
+                groupElecMeter.classList.add('hide');
+                groupGazAppointment.classList.add('hide');
+                
+                labelDateElec.textContent = "Date de mise en service Électricité :";
             } else {
-                groupContractElec.classList.add('hide');
+                groupKeepActive.classList.remove('hide');
+                keepActiveLabel.textContent = "Le client demande la résiliation de son contrat d'électricité, mais détient à la même adresse un contrat de gaz pour lequel il n'a pas demandé de résiliation.";
+                groupContractElec.classList.remove('hide');
+                groupDateElec.classList.remove('hide');
+                groupDateGaz.classList.add('hide');
+                if (keepActive) {
+                    groupContractGaz.classList.remove('hide');
+                } else {
+                    groupContractGaz.classList.add('hide');
+                }
+                groupElecMeter.classList.remove('hide');
+
+                // Hide Gaz appointment
+                groupGazAppointment.classList.add('hide');
+                gazAppointmentNeeded.checked = false;
+                groupGazAppointmentDetails.classList.add('hide');
+                gazAppointmentDatePicker.clear();
+                gazAppointmentTimeInput.value = '';
+                gazAppointmentTimeCustomInput.value = '';
+                groupGazAppointmentTimeCustom.classList.add('hide');
             }
-            groupElecMeter.classList.add('hide');
-            meterNonCommunicating.checked = false;
-            groupElecReading.classList.add('hide');
-            elecReadingProvided.checked = false;
-            groupElecReadingInputs.classList.add('hide');
+        } else if (energyType === 'gaz') {
+            if (isCommInProgress) {
+                groupKeepActive.classList.add('hide');
+                groupContractGaz.classList.remove('hide');
+                groupContractElec.classList.add('hide');
+                groupDateGaz.classList.remove('hide');
+                groupDateElec.classList.add('hide');
+                groupElecMeter.classList.add('hide');
+                groupGazAppointment.classList.add('hide');
+                
+                labelDateGaz.textContent = "Date de mise en service Gaz :";
+            } else {
+                groupKeepActive.classList.remove('hide');
+                keepActiveLabel.textContent = "Le client demande la résiliation de son contrat de gaz, mais détient à la même adresse un contrat d'électricité pour lequel il n'a pas demandé de résiliation.";
+                groupContractGaz.classList.remove('hide');
+                groupDateGaz.classList.remove('hide');
+                groupDateElec.classList.add('hide');
+                if (keepActive) {
+                    groupContractElec.classList.remove('hide');
+                } else {
+                    groupContractElec.classList.add('hide');
+                }
+                groupElecMeter.classList.add('hide');
+                meterNonCommunicating.checked = false;
+                groupElecReading.classList.add('hide');
+                elecReadingProvided.checked = false;
+                groupElecReadingInputs.classList.add('hide');
 
-            const defaultLinkyRadio = document.querySelector('input[name="elec-meter-type"][value="linky"]');
-            if (defaultLinkyRadio) defaultLinkyRadio.checked = true;
-            const defaultBaseRadio = document.querySelector('input[name="elec-reading-option"][value="base"]');
-            if (defaultBaseRadio) defaultBaseRadio.checked = true;
+                const defaultLinkyRadio = document.querySelector('input[name="elec-meter-type"][value="linky"]');
+                if (defaultLinkyRadio) defaultLinkyRadio.checked = true;
+                const defaultBaseRadio = document.querySelector('input[name="elec-reading-option"][value="base"]');
+                if (defaultBaseRadio) defaultBaseRadio.checked = true;
 
-            readingBaseVal.value = '';
-            readingHpVal.value = '';
-            readingHcVal.value = '';
-            readingHphVal.value = '';
-            readingHpbVal.value = '';
-            readingHchVal.value = '';
-            readingHcbVal.value = '';
+                readingBaseVal.value = '';
+                readingHpVal.value = '';
+                readingHcVal.value = '';
+                readingHphVal.value = '';
+                readingHpbVal.value = '';
+                readingHchVal.value = '';
+                readingHcbVal.value = '';
 
-            updateReadingFieldsVisibility();
+                updateReadingFieldsVisibility();
 
-            // Show Gaz appointment
-            groupGazAppointment.classList.remove('hide');
+                // Show Gaz appointment
+                groupGazAppointment.classList.remove('hide');
+            }
         } else {
-            groupKeepActive.classList.add('hide');
-            groupContractElec.classList.remove('hide');
-            groupContractGaz.classList.remove('hide');
-            groupDateElec.classList.remove('hide');
-            groupDateGaz.classList.remove('hide');
-            groupElecMeter.classList.remove('hide');
+            if (isCommInProgress) {
+                groupKeepActive.classList.add('hide');
+                groupContractElec.classList.remove('hide');
+                groupContractGaz.classList.remove('hide');
+                groupDateElec.classList.remove('hide');
+                groupDateGaz.classList.remove('hide');
+                groupElecMeter.classList.add('hide');
+                groupGazAppointment.classList.add('hide');
+                
+                labelDateElec.textContent = "Date de mise en service Électricité :";
+                labelDateGaz.textContent = "Date de mise en service Gaz :";
+            } else {
+                groupKeepActive.classList.add('hide');
+                groupContractElec.classList.remove('hide');
+                groupContractGaz.classList.remove('hide');
+                groupDateElec.classList.remove('hide');
+                groupDateGaz.classList.remove('hide');
+                groupElecMeter.classList.remove('hide');
 
-            // Show Gaz appointment
-            groupGazAppointment.classList.remove('hide');
+                // Show Gaz appointment
+                groupGazAppointment.classList.remove('hide');
+            }
         }
         updateReadingFieldsVisibility();
     }
@@ -1477,6 +1606,10 @@ document.addEventListener('DOMContentLoaded', () => {
     contractElecInput.addEventListener('input', generateEmail);
     contractGazInput.addEventListener('input', generateEmail);
     keepActiveOther.addEventListener('change', () => {
+        updateContractInputVisibility();
+        generateEmail();
+    });
+    commissioningInProgress.addEventListener('change', () => {
         updateContractInputVisibility();
         generateEmail();
     });

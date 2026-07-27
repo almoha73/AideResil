@@ -119,6 +119,16 @@
                     </div>
                 </div>
 
+                <!-- Option: Commissioning already in progress -->
+                <div class="form-group" id="group-commissioning" style="margin-top: -8px; margin-bottom: 20px;">
+                    <label class="keep-active-container"
+                        style="display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="commissioning-in-progress"
+                            style="accent-color: var(--primary); width: 18px; height: 18px; border-radius: 4px; cursor: pointer;">
+                        <span style="font-size: 0.875rem; font-weight: 500; line-height: 1.4;">Mise en service déjà en cours par un autre fournisseur (résiliation automatique)</span>
+                    </label>
+                </div>
+
                 <!-- Option to keep the other contract active -->
                 <div class="form-group hide" id="group-keep-active" style="margin-top: -8px; margin-bottom: 20px;">
                     <label class="keep-active-container"
@@ -132,7 +142,7 @@
 
                 <!-- Date Picker Section (Dynamic based on product selection) -->
                 <div class="form-group" id="group-date-elec">
-                    <label class="field-label" for="cancel-date-elec">Date de résiliation Électricité :</label>
+                    <label class="field-label" for="cancel-date-elec" id="label-date-elec">Date de résiliation Électricité :</label>
                     <div class="date-input-wrapper">
                         <div style="display: flex; gap: 8px; width: 100%;">
                             <input type="date" id="cancel-date-elec" class="form-control" style="flex: 1;">
@@ -147,7 +157,7 @@
                 </div>
 
                 <div class="form-group" id="group-date-gaz">
-                    <label class="field-label" for="cancel-date-gaz">Date de résiliation Gaz :</label>
+                    <label class="field-label" for="cancel-date-gaz" id="label-date-gaz">Date de résiliation Gaz :</label>
                     <div class="date-input-wrapper">
                         <div style="display: flex; gap: 8px; width: 100%;">
                             <input type="date" id="cancel-date-gaz" class="form-control" style="flex: 1;">
