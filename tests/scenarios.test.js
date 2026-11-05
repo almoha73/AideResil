@@ -135,7 +135,7 @@ const scenarios = [
 
     // --- Mise en service en cours
     { name: 'Mise en service élec future', setup: ({ check, date }) => { check('commissioning-in-progress'); date('cancel-date-elec', FUTURE); },
-      body: ['est prévue le vendredi 20 novembre 2026 pour le futur occupant des lieux', 'lorsque la mise en service du futur occupant des lieux aura lieu'] },
+      body: ['est prévue le vendredi 20 novembre 2026 pour le futur occupant des lieux', 'elle se fera automatiquement lors de cette mise en service.'] },
     { name: 'Mise en service élec passée → déjà résilié', setup: ({ check, date }) => { check('commissioning-in-progress'); date('cancel-date-elec', PAST); },
       subject: ['Résiliation automatique'], body: ['a déjà eu lieu', 'est intervenue automatiquement'] },
     // Mise en service sur une seule énergie (Élec + Gaz) : l'autre énergie suit les règles normales

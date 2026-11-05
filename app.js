@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Phrase used after "je constate qu'" when a commissioning (future occupant) exists.
     // dateVal may be empty: the advisor sees the commissioning but not necessarily its date.
     function getCommissioningInfo(dateVal, plural) {
-        const automaticPhrase = `Par conséquent, la résiliation ne peut pas être demandée en tant que telle : elle se fera automatiquement lorsque la mise en service du futur occupant des lieux aura lieu.`;
+        const automaticPhrase = `Par conséquent, la résiliation ne peut pas être demandée en tant que telle : elle se fera automatiquement lors de cette mise en service.`;
         if (!dateVal) {
             return {
                 isPast: false,
