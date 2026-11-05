@@ -135,16 +135,82 @@ const scenarios = [
 
     // --- Mise en service en cours
     { name: 'Mise en service élec future', setup: ({ check, date }) => { check('commissioning-in-progress'); date('cancel-date-elec', FUTURE); },
-      body: ['est déjà en cours pour le vendredi 20 novembre 2026', 'elle sera automatique'] },
+      body: ['est prévue le vendredi 20 novembre 2026 pour le futur occupant des lieux', 'lorsque la mise en service du futur occupant des lieux aura lieu'] },
     { name: 'Mise en service élec passée → déjà résilié', setup: ({ check, date }) => { check('commissioning-in-progress'); date('cancel-date-elec', PAST); },
-      subject: ['Résiliation automatique'], body: ['a déjà été effectuée', 'est intervenue automatiquement'] },
-    { name: 'Mise en service élec uniquement (Élec + Gaz) → gaz résilié normalement',
-      setup: ({ check, date }) => { check('#energy-both'); check('commissioning-in-progress'); check('input[name="commissioning-scope"][value="elec"]'); date('cancel-date-elec', FUTURE); date('cancel-date-gaz', TODAY); },
-      subject: ['Mise en service en cours (électricité)'], body: ['⚡ Concernant votre contrat d\'électricité : je constate', '🔥 Concernant votre contrat de gaz', 'vendredi 6 novembre 2026'] },
-    { name: 'Mise en service gaz uniquement (Élec + Gaz), date de mise en service manquante',
-      setup: ({ check, date, clear }) => { check('#energy-both'); check('commissioning-in-progress'); check('input[name="commissioning-scope"][value="gaz"]'); date('cancel-date-elec', FUTURE); clear('gaz'); },
-      subject: ['⚠️', 'Date de mise en service gaz à préciser'], body: ['vous n\'avez pas mentionné la date', '⚡ Concernant votre contrat d\'électricité'] },
+      subject: ['Résiliation automatique'], body: ['a déjà eu lieu', 'est intervenue automatiquement'] },
+    // Mise en service sur une seule énergie (Élec + Gaz) : l'autre énergie suit les règles normales
+    ...partialScenarios(),
 ];
+
+function partialScenarios() {
+    const list = [];
+    const setupBase = (scope) => ({ check }) => {
+        check('#energy-both');
+        check('commissioning-in-progress');
+        check(`input[name="commissioning-scope"][value="${scope}"]`);
+    };
+    const common = (commLabel, otherLabel) => ({
+        body: [`Concernant votre contrat ${commLabel} : je constate qu'une mise en service`, `Concernant votre contrat ${otherLabel} : `],
+        // pas d'introduction répétée dans la partie de l'autre énergie
+        bodyNot: ['\n✅ Je vous confirme', 'pour votre contrat d', ' : Cependant', ' : cependant'],
+    });
+
+    // Mise en service élec, gaz résilié normalement
+    const gazCases = [
+        ['gaz passé', ({ date }) => date('cancel-date-gaz', PAST), ['de manière rétroactive', 'vendredi 6 novembre 2026']],
+        ['gaz aujourd\'hui', ({ date }) => date('cancel-date-gaz', TODAY), ['vendredi 6 novembre 2026']],
+        ['gaz futur', ({ date }) => date('cancel-date-gaz', FUTURE), ['vendredi 20 novembre 2026']],
+        ['gaz samedi', ({ date }) => date('cancel-date-gaz', SATURDAY), ['lundi 23 novembre 2026']],
+        ['gaz férié', ({ date }) => date('cancel-date-gaz', HOLIDAY), ['jeudi 12 novembre 2026']],
+        ['gaz sans date', ({ clear }) => clear('gaz'), ['je constate que vous n\'avez pas indiqué la date']],
+        ['gaz avec RDV', ({ date, check }) => { date('cancel-date-gaz', FUTURE); check('gaz-appointment-needed'); date('gaz-appointment-date', '2026-11-24'); }, ['mardi 24 novembre 2026', 'Ce rendez-vous est programmé']],
+    ];
+    const elecCommDates = [
+        ['MES élec datée', ({ date }) => date('cancel-date-elec', FUTURE), 'est prévue le vendredi 20 novembre 2026'],
+        ['MES élec sans date', ({ clear }) => clear('elec'), 'est prévue pour le futur occupant des lieux'],
+        ['MES élec passée', ({ date }) => date('cancel-date-elec', PAST), 'a déjà eu lieu le dimanche 1 novembre 2026'],
+    ];
+    for (const [commName, commSetup, commText] of elecCommDates) {
+        for (const [name, setup, texts] of gazCases) {
+            const c = common("d'électricité", 'de gaz');
+            list.push({
+                name: `${commName} + ${name}`,
+                setup: (h) => { setupBase('elec')(h); commSetup(h); setup(h); },
+                body: [...c.body, commText, ...texts], bodyNot: c.bodyNot,
+                subject: [commName.includes('passée') ? 'Résiliation automatique (électricité)' : 'Mise en service prévue (électricité)'],
+            });
+        }
+    }
+
+    // Mise en service gaz, électricité résiliée normalement
+    const elecCases = [
+        ['élec passée', ({ date }) => date('cancel-date-elec', PAST), ['de manière rétroactive', 'jeudi 5 novembre 2026']],
+        ['élec aujourd\'hui', ({ date }) => date('cancel-date-elec', TODAY), ['jeudi 5 novembre 2026']],
+        ['élec future', ({ date }) => date('cancel-date-elec', FUTURE), ['vendredi 20 novembre 2026']],
+        ['élec samedi (pas de report)', ({ date }) => date('cancel-date-elec', SATURDAY), ['samedi 21 novembre 2026']],
+        ['élec sans date', ({ clear }) => clear('elec'), ['je constate que vous n\'avez pas indiqué la date']],
+        ['élec aujourd\'hui, non communicant sans relève', ({ date, check }) => { date('cancel-date-elec', TODAY); check('meter-non-communicating'); }, ['URGENT']],
+        ['élec aujourd\'hui, non communicant avec relève', ({ date, check, type }) => { date('cancel-date-elec', TODAY); check('meter-non-communicating'); check('elec-reading-provided'); type('reading-base-val', '12345'); }, ['sur la base de la relève', '12345']],
+        ['élec future, non communicant avec relève', ({ date, check }) => { date('cancel-date-elec', FUTURE); check('meter-non-communicating'); check('elec-reading-provided'); }, ['📸', 'nouvelle relève à cette date.']],
+        ['élec sans date, non communicant avec relève', ({ clear, check }) => { clear('elec'); check('meter-non-communicating'); check('elec-reading-provided'); }, ["j'ai bien reçu votre relève de compteur"]],
+    ];
+    const gazCommDates = [
+        ['MES gaz datée', ({ date }) => date('cancel-date-gaz', FUTURE), 'est prévue le vendredi 20 novembre 2026'],
+        ['MES gaz sans date', ({ clear }) => clear('gaz'), 'est prévue pour le futur occupant des lieux'],
+    ];
+    for (const [commName, commSetup, commText] of gazCommDates) {
+        for (const [name, setup, texts] of elecCases) {
+            const c = common('de gaz', "d'électricité");
+            list.push({
+                name: `${commName} + ${name}`,
+                setup: (h) => { setupBase('gaz')(h); commSetup(h); setup(h); },
+                body: [...c.body, commText, ...texts], bodyNot: c.bodyNot,
+                subject: ['Mise en service prévue (gaz)'],
+            });
+        }
+    }
+    return list;
+}
 
 let failures = 0;
 for (const sc of scenarios) {
