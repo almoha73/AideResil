@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (indexProvided) {
                         const readingPhrase = getElecReadingPhrase();
-                        emailBody = `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}), ainsi que votre index de consommation. Celui-ci a été enregistré ${readingPhrase}.\n\nCependant, je constate que vous n'avez pas indiqué la date à laquelle vous souhaitez que cette résiliation prenne effet.\n\nPourriez-vous me communiquer la date de résiliation souhaitée ?\n- Si la date souhaitée est dans le futur, je vous informe que je ne peux pas prendre en compte la relève que vous m'avez transmise aujourd'hui car votre consommation évoluera d'ici là. Il vous faudra donc me communiquer une nouvelle relève le jour même de votre départ, car je ne peux pas résilier sans relève.\n- Si la résiliation doit intervenir immédiatement, j'utiliserai la relève que vous venez de me transmettre pour finaliser votre demande.\n\nDans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                        emailBody = `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}), ainsi que votre relève de compteur ${readingPhrase}.\n\nCependant, je constate que vous n'avez pas indiqué la date à laquelle vous souhaitez que cette résiliation prenne effet.\n\nPourriez-vous me communiquer la date de résiliation souhaitée ?\n- Si la date souhaitée est dans le futur, je vous informe que je ne peux pas prendre en compte la relève que vous m'avez transmise aujourd'hui car votre consommation évoluera d'ici là. Il vous faudra donc me communiquer une nouvelle relève le jour même de votre départ, car je ne peux pas résilier sans relève.\n- Si la résiliation doit intervenir immédiatement, j'utiliserai la relève que vous venez de me transmettre pour finaliser votre demande.\n\nDans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                     } else {
                         emailBody = `J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCependant, je constate d'une part que vous n'avez pas indiqué la date à laquelle vous souhaitez que cette résiliation prenne effet, et d'autre part que votre relève de compteur est manquante. Votre compteur étant ${meterLabel}, je vous informe qu'il n'est pas possible de procéder à la résiliation sans la transmission de votre relève (soit ${indexLabel}).\n\nPourriez-vous me communiquer la date de résiliation souhaitée ?\n- Si la date souhaitée est dans le futur, il vous faudra impérativement me transmettre votre relève le jour même où vous quittez le logement afin que je puisse finaliser la résiliation.\n- Si la résiliation doit intervenir immédiatement, merci de me transmettre votre relève dès aujourd'hui.\n\nDans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                     }
@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                         }
 
-                        emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nVotre compteur étant non communicant, je vous informe que je résilierai votre contrat le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
+                        emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de votre contrat d'électricité (PDL n° ${pdlElec}).\n\nVotre compteur étant non communicant, je vous informe que je résilierai votre contrat à la date demandée, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                     }
                 } else {
                     if (isToday || isFuture) {
@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     rulesStatusClass = 'status-warning';
 
                     const requestedDateStr = requestedDate ? formatLongFrenchDate(requestedDate) : "";
-                    const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                    const insteadOfPhrase = (rdvDate && requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
                     emailBody = `Je vous confirme la prise en compte de la résiliation de votre contrat de gaz (PCE n° ${pceGaz}).\n\nLa résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance.\n\nVotre facture de clôture vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.`;
                 } else {
                     if (isFuture) {
@@ -773,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (indexProvided) {
                         const readingPhrase = getElecReadingPhrase();
-                        emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}), ainsi que votre index de consommation électrique. Celui-ci a été enregistré ${readingPhrase}.\n\nCependant, je constate que vous n'avez pas indiqué les dates auxquelles vous souhaitez que ces résiliations prennent effet.\n\nPourriez-vous me préciser la date à laquelle vous souhaitez que ces résiliations prennent effet (en indiquant si vous souhaitez la même date pour les deux contrats ou des dates distinctes) ?\n- Si la date de résiliation de l'électricité souhaitée est dans le futur, je vous informe que je ne peux pas prendre en compte la relève que vous m'avez transmise aujourd'hui car votre consommation évoluera d'ici là. Il vous faudra donc me communiquer une nouvelle relève le jour même de votre départ, car je ne peux pas résilier sans relève.\n- Si celle-ci doit intervenir immédiatement, j'utiliserai la relève que vous venez de me transmettre pour finaliser votre demande.\n\nDans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                        emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}), ainsi que votre relève de compteur électrique ${readingPhrase}.\n\nCependant, je constate que vous n'avez pas indiqué les dates auxquelles vous souhaitez que ces résiliations prennent effet.\n\nPourriez-vous me préciser la date à laquelle vous souhaitez que ces résiliations prennent effet (en indiquant si vous souhaitez la même date pour les deux contrats ou des dates distinctes) ?\n- Si la date de résiliation de l'électricité souhaitée est dans le futur, je vous informe que je ne peux pas prendre en compte la relève que vous m'avez transmise aujourd'hui car votre consommation évoluera d'ici là. Il vous faudra donc me communiquer une nouvelle relève le jour même de votre départ, car je ne peux pas résilier sans relève.\n- Si celle-ci doit intervenir immédiatement, j'utiliserai la relève que vous venez de me transmettre pour finaliser votre demande.\n\nDans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                     } else {
                         emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCependant, je constate d'une part que vous n'avez pas indiqué les dates auxquelles vous souhaitez que ces résiliations prennent effet, et d'autre part que la relève de votre compteur d'électricité est manquante. Votre compteur d'électricité étant ${meterLabel}, je vous informe qu'il n'est pas possible de procéder à la résiliation de ce contrat sans la transmission de votre relève (soit ${indexLabel}).\n\nPourriez-vous me préciser la date à laquelle vous souhaitez que ces résiliations prennent effet (en indiquant si vous souhaitez la même date pour les deux contrats ou des dates distinctes) ?\n- Si la date de résiliation de l'électricité souhaitée est dans le futur, il vous faudra impérativement me transmettre votre relève le jour même où vous quittez le logement afin que je puisse finaliser la résiliation.\n- Si celle-ci doit intervenir immédiatement, merci de me transmettre votre relève dès aujourd'hui.\n\nDans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                     }
@@ -808,7 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (indexProvided) {
                                 readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                             }
-                            elecExplanationText = `Votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}`;
+                            elecExplanationText = `Votre compteur étant non communicant, la résiliation sera effective à la date demandée, soit le ${dateStr}, ${reqPhrase}.${readingNotice ? readingNotice + '.' : ''}`;
                         }
                     } else {
                         effElecDate = today;
@@ -863,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 emailSubject = "⚠️ Demande de confirmation - Date de résiliation de vos contrats d'électricité et de gaz";
-                emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat d'électricité : ${elecExplanationText} Votre facture de clôture d'électricité vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.\n\n⚠️ Cependant, la date souhaitée pour votre contrat de gaz n'a pas été précisée. ${proposedGazPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                emailBody = `J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat d'électricité : ${elecExplanationText}\n\nVotre facture de clôture d'électricité vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.\n\n⚠️ Cependant, la date souhaitée pour votre contrat de gaz n'a pas été précisée. ${proposedGazPhrase}\n\nDans l'attente de votre confirmation ou de vos instructions, je reste à votre entière disposition pour tout renseignement complémentaire.`;
                 rulesAppliedText = `Date électricité renseignée (${formatLongFrenchDate(reqElecDate)}), date gaz manquante. Confirmation pour l'électricité et demande de précision pour le gaz générées (post-report si week-end/aujourd'hui).`;
                 rulesStatusClass = 'status-warning';
             }
@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     effGazDate = rdvDate || reqGazDate || today;
                     const rdvDateStr = rdvDate ? formatLongFrenchDate(rdvDate) : "[Date de RDV]";
                     const requestedDateStr = reqGazDate ? formatLongFrenchDate(reqGazDate) : "";
-                    const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                    const insteadOfPhrase = (rdvDate && requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
                     gazExplanationText = `La résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu de faire une résiliation à distance.`;
                 } else {
                     if (reqGazDate > today) {
@@ -985,8 +985,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rdvDate = rdvDateVal ? parseLocalDate(rdvDateVal) : null;
 
                     if (isRdvNeeded) {
-                        effElecDate = (isPast) ? today : requestedDate;
-                        effGazDate = rdvDate || requestedDate || today;
+                        const effElecDate = (isPast) ? today : requestedDate;
                         const dateElecStr = formatLongFrenchDate(effElecDate);
                         const rdvDateStr = rdvDate ? formatLongFrenchDate(rdvDate) : "[Date de RDV]";
                         
@@ -1002,20 +1001,23 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                             
                             if (isToday || isPast) {
-                                const readingText = indexProvided ? getElecReadingPhrase() : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
-                                elecReadingClause = `, sur la base de la relève que vous m'avez transmise ${readingText}`;
+                                const readingText = indexProvided
+                                    ? `sur la base de la relève que vous m'avez transmise ${getElecReadingPhrase()}`
+                                    : getElecReadingRequestPhrase('subjunctive', "à cette date. 🚨 URGENT : je ne peux pas résilier aujourd'hui sans relève, merci de la communiquer au plus vite");
+                                elecReadingClause = `, ${readingText}`;
                                 if (!indexProvided) {
                                     emailSubject = "🚨 Action requise : Résiliation élec impossible sans votre relève - Contrats d'électricité et de gaz";
                                 }
                             } else {
-                                elecReadingClause = `, ${reqPhrase}.${readingNotice}`;
+                                elecReadingClause = `, ${reqPhrase}${readingNotice ? '.' + readingNotice : ''}`;
                             }
                         }
 
+                        const pastElecPhrase = isPast ? ` (la date demandée étant dans le passé, il n'est pas possible de résilier de manière rétroactive)` : '';
                         const requestedDateStr = requestedDate ? formatLongFrenchDate(requestedDate) : "";
-                        const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                        const insteadOfPhrase = (rdvDate && requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
 
-                        emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation sera effective le ${dateElecStr}${elecReadingClause}.\n- Pour votre contrat de gaz : la résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
+                        emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : la résiliation sera effective le ${dateElecStr}${pastElecPhrase}${elecReadingClause}.\n- Pour votre contrat de gaz : la résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                     } else {
                         if (isFuture) {
                             const isRequestedBizDay = isBusinessDay(requestedDate);
@@ -1031,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                                     }
 
-                                    emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : la résiliation sera effective le ${dateStr}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
+                                    emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective à la date demandée, soit le ${dateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : la résiliation sera effective le ${dateStr}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                                 } else {
                                     rulesAppliedText = `Date future (${formatLongFrenchDate(requestedDate)}). Les deux contrats (Élec & Gaz) seront résiliés à cette date.`;
                                     rulesStatusClass = 'status-success';
@@ -1056,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                                     }
 
-                                    emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective le jour même de votre demande, soit le ${requestedDateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : ${bulletPhrase}\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
+                                    emailBody = `Je vous confirme la prise en compte de votre demande de résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : votre compteur étant non communicant, la résiliation sera effective à la date demandée, soit le ${requestedDateStr}, ${reqPhrase}.${readingNotice}\n- Pour votre contrat de gaz : ${bulletPhrase}\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
                                 } else {
                                     rulesAppliedText = `Date future (${requestedDateStr}) tombant un ${dayOfWeekStr}. Élec résilié à cette date. Gaz reporté au prochain jour ouvré (${effectiveDateStr}).`;
                                     rulesStatusClass = 'status-warning';
@@ -1127,6 +1129,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const reqGazDate = parseLocalDate(dateGazVal);
                     reqGazDate.setHours(0, 0, 0, 0);
 
+                    // Default subject (may be overridden below by an urgent subject)
+                    emailSubject = "Confirmation de la résiliation de vos contrats d'électricité et de gaz";
+
                     // Evaluate electricity date
                     let effElecDate;
                     let elecExplanationText = '';
@@ -1150,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (indexProvided) {
                                     readingNotice = `\n- 📸 L'index de consommation transmis aujourd'hui ne pouvant être enregistré par anticipation (votre consommation étant amenée à évoluer d'ici la date effective de résiliation), je vous invite à me communiquer une nouvelle relève à cette date`;
                                 }
-                                elecExplanationText = `votre compteur étant non communicant, la résiliation de votre contrat d'électricité sera effective le jour même de votre demande, soit le ${dateStr}, ${reqPhrase}.${readingNotice}`;
+                                elecExplanationText = `votre compteur étant non communicant, la résiliation de votre contrat d'électricité sera effective à la date demandée, soit le ${dateStr}, ${reqPhrase}${readingNotice ? '.' + readingNotice : ''}`;
                             }
                         } else {
                             effElecDate = today;
@@ -1187,7 +1192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         effGazDate = rdvDate || reqGazDate || today;
                         const rdvDateStr = rdvDate ? formatLongFrenchDate(rdvDate) : "[Date de RDV]";
                         const requestedDateStr = reqGazDate ? formatLongFrenchDate(reqGazDate) : "";
-                        const insteadOfPhrase = (requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
+                        const insteadOfPhrase = (rdvDate && requestedDateStr && requestedDateStr !== rdvDateStr) ? `, au lieu du ${requestedDateStr} comme demandé` : '';
                         gazExplanationText = `la résiliation sera effective le ${rdvDateStr}${insteadOfPhrase}. En effet, GRDF, le gestionnaire du réseau gaz, a demandé un rendez-vous physique pour procéder à cette mise hors service (résiliation). Il peut arriver que GRDF demande votre présence pour cela au lieu d'effectuer une résiliation à distance`;
                     } else {
                         if (reqGazDate > today) {
@@ -1197,7 +1202,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             } else {
                                 effGazDate = getClosestBusinessDay(reqGazDate);
                                 const explanation = getFutureGazPostponementPhrase(reqGazDate, effGazDate);
-                                gazExplanationText = explanation.charAt(0).toLowerCase() + explanation.slice(1);
+                                gazExplanationText = (explanation.charAt(0).toLowerCase() + explanation.slice(1)).replace(/\.$/, '');
                             }
                         } else {
                             effGazDate = nextBusinessDay;
@@ -1216,7 +1221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    emailSubject = "Confirmation de la résiliation de vos contrats d'électricité et de gaz";
                     emailBody = `Je vous confirme la prise en compte de la résiliation de vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités et dates effectives sont les suivantes :\n- Pour votre contrat d'électricité : ${elecExplanationText}.\n- Pour votre contrat de gaz : ${gazExplanationText}.\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations respectives.\n\nJe reste à votre entière disposition pour tout renseignement complémentaire.`;
 
                     rulesAppliedText = `Deux dates distinctes. Élec effective le ${formatLongFrenchDate(effElecDate)}. Gaz effective le ${formatLongFrenchDate(effGazDate)}.`;
@@ -1225,8 +1229,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Gaz appointment is only meaningful when a gas cancellation date is known
+        const hasGazAppointment = gazAppointmentNeeded && gazAppointmentNeeded.checked
+            && energyType !== 'elec' && !!cancelDateGazInput.value;
+
+        if (hasGazAppointment && gazAppointmentDateInput.value) {
+            const rdvCheckDate = parseLocalDate(gazAppointmentDateInput.value);
+            if (rdvCheckDate < today) {
+                rulesAppliedText += " ⚠️ Attention : la date de rendez-vous GRDF saisie est dans le passé.";
+                rulesStatusClass = 'status-warning';
+            }
+        }
+
         // Inject Gaz Appointment details if needed
-        if (gazAppointmentNeeded && gazAppointmentNeeded.checked && !isAppointmentAlreadyInjected) {
+        if (hasGazAppointment && !isAppointmentAlreadyInjected) {
             // Update Subject with RDV Alert
             if (emailSubject.startsWith("⚠️")) {
                 emailSubject = "⚠️ Rendez-vous obligatoire - " + emailSubject.substring(2);
@@ -1341,10 +1357,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (isFuture) {
                 // Update Subject
+                // (keep the information carried by the previous subject: RDV, other contract, missing gas date)
+                const rdvPrefix = hasGazAppointment ? "Rendez-vous obligatoire - " : "";
                 if (energyType === 'elec') {
-                    emailSubject = "⚠️ Action requise : Relève de compteur à fournir - Contrat d'électricité";
+                    const otherContractSuffix = keepActiveOther.checked ? " & question pour votre contrat gaz" : "";
+                    emailSubject = `⚠️ Action requise : Relève de compteur à fournir${otherContractSuffix} - Contrat d'électricité`;
                 } else if (energyType === 'both') {
-                    emailSubject = "⚠️ Action requise : Relève de compteur à fournir - Vos contrats d'électricité et de gaz";
+                    const missingGazSuffix = !cancelDateGazInput.value ? " & date de résiliation gaz à préciser" : "";
+                    emailSubject = `⚠️ ${rdvPrefix}Action requise : Relève de compteur à fournir${missingGazSuffix} - Vos contrats d'électricité et de gaz`;
                 }
 
                 // Update Body introduction
@@ -1376,6 +1396,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
                 emailBody = emailBody.replace(
                     "\n\nVos factures de clôture vous seront adressées dans un délai de 15 jours à 3 semaines après ces résiliations.",
+                    ""
+                );
+                emailBody = emailBody.replace(
+                    "\n\nVotre facture de clôture d'électricité vous sera adressée dans un délai de 15 jours à 3 semaines après cette résiliation.",
                     ""
                 );
             }
