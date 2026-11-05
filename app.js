@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const contractElecInput = document.getElementById('contract-elec');
     const contractGazInput = document.getElementById('contract-gaz');
     const commissioningInProgress = document.getElementById('commissioning-in-progress');
+    const groupCommissioningScope = document.getElementById('group-commissioning-scope');
     const labelDateElec = document.getElementById('label-date-elec');
     const labelDateGaz = document.getElementById('label-date-gaz');
 
@@ -317,86 +318,102 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Phrase used after "je constate qu'" when a commissioning by another supplier exists
+    function getCommissioningInfo(dateVal, plural) {
+        const todayRef = new Date();
+        todayRef.setHours(0, 0, 0, 0);
+        const date = parseLocalDate(dateVal);
+        const dateStr = formatLongFrenchDate(date);
+        if (date < todayRef) {
+            const contractsStr = plural ? 'vos contrats' : 'votre contrat';
+            return {
+                isPast: true,
+                phrase: `une mise en service a déjà été effectuée par un autre fournisseur le ${dateStr}. Par conséquent, la résiliation de ${contractsStr} est intervenue automatiquement à cette date, il n'est donc pas nécessaire de la demander.`,
+                rules: `Mise en service déjà effectuée le ${dateStr} (date passée). Résiliation déjà intervenue automatiquement.`
+            };
+        }
+        return {
+            isPast: false,
+            phrase: `une mise en service est déjà en cours pour le ${dateStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.`,
+            rules: `Mise en service en cours le ${dateStr}. Résiliation automatique.`
+        };
+    }
+
     // -------------------------------------------------------------
     // Business Logic & Generation
     // -------------------------------------------------------------
     function generateEmail() {
         // 1. Inputs values
-        const energyType = document.querySelector('input[name="energy-type"]:checked').value;
+        const selectedEnergyType = document.querySelector('input[name="energy-type"]:checked').value;
         const pdlElec = contractElecInput.value.trim() || '[PDL]';
         const pceGaz = contractGazInput.value.trim() || '[PCE]';
 
-        if (commissioningInProgress.checked) {
+        // Commissioning scope: in "both" mode, the commissioning may concern only one energy
+        const commScopeRadio = document.querySelector('input[name="commissioning-scope"]:checked');
+        const commScope = (selectedEnergyType === 'both' && commScopeRadio) ? commScopeRadio.value : selectedEnergyType;
+        // partialCommissioning = energy with a commissioning in progress, the other one follows the normal rules
+        const partialCommissioning = (commissioningInProgress.checked && selectedEnergyType === 'both' && commScope !== 'both') ? commScope : null;
+        const energyType = partialCommissioning ? (partialCommissioning === 'elec' ? 'gaz' : 'elec') : selectedEnergyType;
+        const keepActiveEffective = keepActiveOther.checked && !partialCommissioning;
+
+        if (commissioningInProgress.checked && !partialCommissioning) {
             let emailSubject = '';
             let emailBody = '';
             let rulesAppliedText = '';
             let rulesStatusClass = 'status-success';
 
-            if (energyType === 'elec') {
-                const dateVal = cancelDateElecInput.value;
+            const askDateClosing = `\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+            const infoClosing = `\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
+            const subjectFor = (info, contractsLabel) => info.isPast
+                ? `Information : Résiliation automatique suite à une mise en service - ${contractsLabel}`
+                : `Information : Mise en service en cours - ${contractsLabel}`;
+
+            if (energyType === 'elec' || energyType === 'gaz') {
+                const isElec = energyType === 'elec';
+                const dateVal = isElec ? cancelDateElecInput.value : cancelDateGazInput.value;
+                const contractStr = isElec ? `votre contrat d'électricité (PDL n° ${pdlElec})` : `votre contrat de gaz (PCE n° ${pceGaz})`;
+                const intro = `📥 J'ai bien reçu votre demande de résiliation pour ${contractStr}.`;
                 if (!dateVal) {
-                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat d'électricité";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date afin que je puisse faire le nécessaire ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                    rulesAppliedText = "Date de mise en service électricité manquante.";
+                    emailSubject = `⚠️ Action requise : Date de mise en service de votre contrat ${isElec ? "d'électricité" : 'de gaz'}`;
+                    emailBody = `${intro}\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date afin que je puisse faire le nécessaire ?${askDateClosing}`;
+                    rulesAppliedText = `Date de mise en service ${isElec ? 'électricité' : 'gaz'} manquante.`;
                     rulesStatusClass = 'status-warning';
                 } else {
-                    const reqDate = parseLocalDate(dateVal);
-                    const dateStr = formatLongFrenchDate(reqDate);
-                    emailSubject = "Information : Mise en service en cours - Contrat d'électricité";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat d'électricité (PDL n° ${pdlElec}).\n\nCependant, je constate qu'une mise en service est déjà en cours pour le ${dateStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                    rulesAppliedText = `Mise en service en cours le ${dateStr}. Résiliation automatique.`;
+                    const info = getCommissioningInfo(dateVal, false);
+                    emailSubject = subjectFor(info, isElec ? "Contrat d'électricité" : "Contrat de gaz");
+                    emailBody = `${intro}\n\nCependant, je constate qu'${info.phrase}${infoClosing}`;
+                    rulesAppliedText = info.rules;
                 }
-            } else if (energyType === 'gaz') {
-                const dateVal = cancelDateGazInput.value;
-                if (!dateVal) {
-                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat de gaz";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat de gaz (PCE n° ${pceGaz}).\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date afin que je puisse faire le nécessaire ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                    rulesAppliedText = "Date de mise en service gaz manquante.";
-                    rulesStatusClass = 'status-warning';
-                } else {
-                    const reqDate = parseLocalDate(dateVal);
-                    const dateStr = formatLongFrenchDate(reqDate);
-                    emailSubject = "Information : Mise en service en cours - Contrat de gaz";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour votre contrat de gaz (PCE n° ${pceGaz}).\n\nCependant, je constate qu'une mise en service est déjà en cours pour le ${dateStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                    rulesAppliedText = `Mise en service en cours le ${dateStr}. Résiliation automatique.`;
-                }
-            } else if (energyType === 'both') {
+            } else {
                 const dateElecVal = cancelDateElecInput.value;
                 const dateGazVal = cancelDateGazInput.value;
+                const intro = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).`;
 
                 if (!dateElecVal && !dateGazVal) {
                     emailSubject = "⚠️ Action requise : Date de mise en service de vos contrats d'électricité et de gaz";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date (ou les dates respectives si elles diffèrent) afin que je puisse faire le nécessaire ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
+                    emailBody = `${intro}\n\nCependant, vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci.\n\nPourriez-vous me communiquer cette date (ou les dates respectives si elles diffèrent) afin que je puisse faire le nécessaire ?${askDateClosing}`;
                     rulesAppliedText = "Dates de mise en service électricité et gaz manquantes.";
                     rulesStatusClass = 'status-warning';
-                } else if (dateElecVal && !dateGazVal) {
-                    const reqElecDate = parseLocalDate(dateElecVal);
-                    const dateElecStr = formatLongFrenchDate(reqElecDate);
-                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat de gaz";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat d'électricité, je constate qu'une mise en service est déjà en cours pour le ${dateElecStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n⚠️ Cependant, vous n'avez pas indiqué la date de mise en service pour votre contrat de gaz. Pourriez-vous me la communiquer ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                    rulesAppliedText = `Mise en service électricité en cours le ${dateElecStr}, date gaz manquante.`;
+                } else if (!dateElecVal || !dateGazVal) {
+                    const knownIsElec = !!dateElecVal;
+                    const info = getCommissioningInfo(knownIsElec ? dateElecVal : dateGazVal, false);
+                    const knownLabel = knownIsElec ? "d'électricité" : 'de gaz';
+                    const missingLabel = knownIsElec ? 'de gaz' : "d'électricité";
+                    emailSubject = `⚠️ Action requise : Date de mise en service de votre contrat ${missingLabel}`;
+                    emailBody = `${intro}\n\nPour votre contrat ${knownLabel}, je constate qu'${info.phrase}\n\n⚠️ Cependant, vous n'avez pas indiqué la date de mise en service pour votre contrat ${missingLabel}. Pourriez-vous me la communiquer ?${askDateClosing}`;
+                    rulesAppliedText = `${knownIsElec ? 'Électricité' : 'Gaz'} : ${info.rules} Date ${knownIsElec ? 'gaz' : 'électricité'} manquante.`;
                     rulesStatusClass = 'status-warning';
-                } else if (!dateElecVal && dateGazVal) {
-                    const reqGazDate = parseLocalDate(dateGazVal);
-                    const dateGazStr = formatLongFrenchDate(reqGazDate);
-                    emailSubject = "⚠️ Action requise : Date de mise en service de votre contrat d'électricité";
-                    emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nPour votre contrat de gaz, je constate qu'une mise en service est déjà en cours pour le ${dateGazStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n⚠️ Cependant, vous n'avez pas indiqué la date de mise en service pour votre contrat d'électricité. Pourriez-vous me la communiquer ?\n\n✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                    rulesAppliedText = `Mise en service gaz en cours le ${dateGazStr}, date électricité manquante.`;
-                    rulesStatusClass = 'status-warning';
+                } else if (dateElecVal === dateGazVal) {
+                    const info = getCommissioningInfo(dateElecVal, true);
+                    emailSubject = subjectFor(info, "Contrats d'électricité et de gaz");
+                    emailBody = `${intro}\n\nCependant, je constate qu'${info.phrase}${infoClosing}`;
+                    rulesAppliedText = `${info.rules} (deux énergies)`;
                 } else {
-                    const reqElecDate = parseLocalDate(dateElecVal);
-                    const reqGazDate = parseLocalDate(dateGazVal);
-                    const dateElecStr = formatLongFrenchDate(reqElecDate);
-                    const dateGazStr = formatLongFrenchDate(reqGazDate);
-
-                    emailSubject = "Information : Mise en service en cours - Contrats d'électricité et de gaz";
-                    if (dateElecVal === dateGazVal) {
-                        emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nCependant, je constate qu'une mise en service est déjà en cours pour le ${dateElecStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                        rulesAppliedText = `Mise en service en cours le ${dateElecStr} pour les deux énergies. Résiliation automatique.`;
-                    } else {
-                        emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\nLes modalités de résiliation sont les suivantes :\n⚡ Pour votre contrat d'électricité : je constate qu'une mise en service est déjà en cours pour le ${dateElecStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n🔥 Pour votre contrat de gaz : je constate qu'une mise en service est déjà en cours pour le ${dateGazStr}. Par conséquent, la résiliation ne peut pas être demandée en tant que telle, elle sera automatique.\n\n🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.`;
-                        rulesAppliedText = `Mises en service en cours le ${dateElecStr} (élec) et le ${dateGazStr} (gaz). Résiliation automatique.`;
-                    }
+                    const infoElec = getCommissioningInfo(dateElecVal, false);
+                    const infoGaz = getCommissioningInfo(dateGazVal, false);
+                    emailSubject = subjectFor({ isPast: infoElec.isPast && infoGaz.isPast }, "Contrats d'électricité et de gaz");
+                    emailBody = `${intro}\n\nLes modalités de résiliation sont les suivantes :\n⚡ Pour votre contrat d'électricité : je constate qu'${infoElec.phrase}\n🔥 Pour votre contrat de gaz : je constate qu'${infoGaz.phrase}${infoClosing}`;
+                    rulesAppliedText = `Élec : ${infoElec.rules} Gaz : ${infoGaz.rules}`;
                 }
             }
 
@@ -410,7 +427,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const isNonCommunicating = meterNonCommunicating.checked;
+        // In partial commissioning mode, the electricity meter only matters when electricity follows the normal rules
+        const isNonCommunicating = meterNonCommunicating.checked && energyType !== 'gaz';
         const indexProvided = elecReadingProvided.checked;
         let isAppointmentAlreadyInjected = false;
 
@@ -496,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Generate content according to commodity rules
         if (energyType === 'elec') {
             const dateVal = cancelDateElecInput.value;
-            const keepActive = keepActiveOther.checked;
+            const keepActive = keepActiveEffective;
 
             if (!dateVal) {
                 emailSubject = "⚠️ Action requise : Date de résiliation de votre contrat d'électricité";
@@ -636,7 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         else if (energyType === 'gaz') {
             const dateVal = cancelDateGazInput.value;
-            const keepActive = keepActiveOther.checked;
+            const keepActive = keepActiveEffective;
 
             if (!dateVal) {
                 emailSubject = "⚠️ Action requise : Date de résiliation de votre contrat de gaz";
@@ -1235,8 +1253,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (hasGazAppointment && gazAppointmentDateInput.value) {
             const rdvCheckDate = parseLocalDate(gazAppointmentDateInput.value);
+            const requestedGazCheckDate = parseLocalDate(cancelDateGazInput.value);
             if (rdvCheckDate < today) {
                 rulesAppliedText += " ⚠️ Attention : la date de rendez-vous GRDF saisie est dans le passé.";
+                rulesStatusClass = 'status-warning';
+            } else if (rdvCheckDate < requestedGazCheckDate) {
+                rulesAppliedText += ` ⚠️ Attention : le rendez-vous GRDF (${formatLongFrenchDate(rdvCheckDate)}) est fixé AVANT la date de résiliation souhaitée par le client (${formatLongFrenchDate(requestedGazCheckDate)}). Vérifiez avec le client que cela lui convient.`;
                 rulesStatusClass = 'status-warning';
             }
         }
@@ -1360,7 +1382,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // (keep the information carried by the previous subject: RDV, other contract, missing gas date)
                 const rdvPrefix = hasGazAppointment ? "Rendez-vous obligatoire - " : "";
                 if (energyType === 'elec') {
-                    const otherContractSuffix = keepActiveOther.checked ? " & question pour votre contrat gaz" : "";
+                    const otherContractSuffix = keepActiveEffective ? " & question pour votre contrat gaz" : "";
                     emailSubject = `⚠️ Action requise : Relève de compteur à fournir${otherContractSuffix} - Contrat d'électricité`;
                 } else if (energyType === 'both') {
                     const missingGazSuffix = !cancelDateGazInput.value ? " & date de résiliation gaz à préciser" : "";
@@ -1414,12 +1436,47 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBody = emailBody.replace("Dans l'attente de votre retour,", "✉️ Dans l'attente de votre retour,");
         emailBody = emailBody.replace("Je reste à votre entière disposition pour tout renseignement complémentaire.", "🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.");
 
+        // 2.6 Partial commissioning (Élec + Gaz): wrap the normal email of the other energy
+        if (partialCommissioning) {
+            const isElecComm = partialCommissioning === 'elec';
+            const commDateVal = isElecComm ? cancelDateElecInput.value : cancelDateGazInput.value;
+            const commLabel = isElecComm ? "d'électricité" : 'de gaz';
+            const otherLabel = isElecComm ? 'de gaz' : "d'électricité";
+            const commEmoji = isElecComm ? '⚡' : '🔥';
+            const otherEmoji = isElecComm ? '🔥' : '⚡';
+            const commWord = isElecComm ? 'électricité' : 'gaz';
+
+            let commParagraph;
+            let commSubjectSuffix;
+            if (commDateVal) {
+                const info = getCommissioningInfo(commDateVal, false);
+                commParagraph = `${commEmoji} Concernant votre contrat ${commLabel} : je constate qu'${info.phrase}`;
+                commSubjectSuffix = info.isPast ? ` - Résiliation automatique (${commWord})` : ` - Mise en service en cours (${commWord})`;
+                rulesAppliedText = `${isElecComm ? 'Élec' : 'Gaz'} : ${info.rules} ${isElecComm ? 'Gaz' : 'Élec'} : ${rulesAppliedText}`;
+            } else {
+                commParagraph = `${commEmoji} Concernant votre contrat ${commLabel} : vous m'indiquez qu'une mise en service est en cours par un autre fournisseur, mais vous n'avez pas mentionné la date de celle-ci. Pourriez-vous me la communiquer afin que je puisse faire le nécessaire ?`;
+                commSubjectSuffix = ` - Date de mise en service ${commWord} à préciser`;
+                rulesAppliedText = `${isElecComm ? 'Élec' : 'Gaz'} : date de mise en service manquante. ${isElecComm ? 'Gaz' : 'Élec'} : ${rulesAppliedText}`;
+                rulesStatusClass = 'status-warning';
+                emailBody = emailBody.replace(
+                    "🤝 Je reste à votre entière disposition pour tout renseignement complémentaire.",
+                    "✉️ Dans l'attente de votre retour, je reste à votre entière disposition pour tout renseignement complémentaire."
+                );
+            }
+
+            emailBody = `📥 J'ai bien reçu votre demande de résiliation pour vos contrats d'électricité (PDL n° ${pdlElec}) et de gaz (PCE n° ${pceGaz}).\n\n${commParagraph}\n\n${otherEmoji} Concernant votre contrat ${otherLabel} :\n${emailBody}`;
+            emailSubject = emailSubject + commSubjectSuffix;
+            if (!commDateVal && !emailSubject.startsWith('⚠️') && !emailSubject.startsWith('🚨')) {
+                emailSubject = '⚠️ ' + emailSubject;
+            }
+        }
+
         // 3. Update Preview UI
         emailSubjectInput.value = emailSubject;
         emailBodyInput.value = emailBody;
 
         // Update rules feedback banner
-        rulesTitle.textContent = energyType === 'both' ? 'Règles appliquées (Élec + Gaz)' :
+        rulesTitle.textContent = selectedEnergyType === 'both' ? 'Règles appliquées (Élec + Gaz)' :
             energyType === 'elec' ? 'Règles appliquées (Électricité)' : 'Règles appliquées (Gaz)';
         rulesDescription.textContent = rulesAppliedText;
         rulesBanner.className = `rules-feedback card ${rulesStatusClass}`;
@@ -1565,16 +1622,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             if (isCommInProgress) {
+                const commScope = document.querySelector('input[name="commissioning-scope"]:checked').value;
                 groupKeepActive.classList.add('hide');
                 groupContractElec.classList.remove('hide');
                 groupContractGaz.classList.remove('hide');
                 groupDateElec.classList.remove('hide');
                 groupDateGaz.classList.remove('hide');
-                groupElecMeter.classList.add('hide');
-                groupGazAppointment.classList.add('hide');
-                
-                labelDateElec.textContent = "Date de mise en service Électricité :";
-                labelDateGaz.textContent = "Date de mise en service Gaz :";
+
+                // Electricity follows the normal rules only when the commissioning concerns gas only
+                if (commScope === 'gaz') {
+                    groupElecMeter.classList.remove('hide');
+                } else {
+                    groupElecMeter.classList.add('hide');
+                }
+                // Gas follows the normal rules only when the commissioning concerns electricity only
+                if (commScope === 'elec') {
+                    groupGazAppointment.classList.remove('hide');
+                } else {
+                    groupGazAppointment.classList.add('hide');
+                }
+
+                if (commScope !== 'gaz') labelDateElec.textContent = "Date de mise en service Électricité :";
+                if (commScope !== 'elec') labelDateGaz.textContent = "Date de mise en service Gaz :";
             } else {
                 groupKeepActive.classList.add('hide');
                 groupContractElec.classList.remove('hide');
@@ -1587,16 +1656,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 groupGazAppointment.classList.remove('hide');
             }
         }
+
+        // The commissioning scope choice only makes sense for "Élec + Gaz"
+        if (isCommInProgress && energyType === 'both') {
+            groupCommissioningScope.classList.remove('hide');
+        } else {
+            groupCommissioningScope.classList.add('hide');
+        }
         updateReadingFieldsVisibility();
     }
 
     // -------------------------------------------------------------
     // Toast Notification System
     // -------------------------------------------------------------
-    function triggerToast(message) {
+    function triggerToast(message, duration = 2500) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = 'toast';
+        // Keep the fade-out in sync with the requested display duration
+        toast.style.animationDelay = `0s, ${(duration - 300) / 1000}s`;
+        if (duration > 2500) toast.style.borderLeftColor = '#d97706';
         toast.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -1609,7 +1688,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Remove toast from DOM after animations finish
         setTimeout(() => {
             toast.remove();
-        }, 2500);
+        }, duration);
     }
 
     // -------------------------------------------------------------
@@ -1636,6 +1715,12 @@ document.addEventListener('DOMContentLoaded', () => {
     commissioningInProgress.addEventListener('change', () => {
         updateContractInputVisibility();
         generateEmail();
+    });
+    document.querySelectorAll('input[name="commissioning-scope"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            updateContractInputVisibility();
+            generateEmail();
+        });
     });
 
     meterNonCommunicating.addEventListener('change', () => {
@@ -1781,7 +1866,7 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBodyInput.select();
         navigator.clipboard.writeText(emailBodyInput.value)
             .then(() => {
-                triggerToast('Corps du message copié !');
+                triggerToast('Corps du message copié ! ⚠️ Vérifiez le PDL / PCE inséré par Magic Ink (client avec plusieurs logements)', 5000);
                 btnCopyBody.classList.add('copy-success-pulse');
                 setTimeout(() => btnCopyBody.classList.remove('copy-success-pulse'), 400);
             })

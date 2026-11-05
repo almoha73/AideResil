@@ -62,6 +62,9 @@
                 <p class="info-banner-text">
                     Le corps du mail doit être copié dans <strong>Magic Ink</strong> pour que le bonjour, la signature, le PDL et le PCE se remplissent automatiquement.
                 </p>
+                <p class="info-banner-text" id="pdl-pce-warning" style="margin-top: 6px; color: #d97706; font-weight: 600;">
+                    ⚠️ Toujours vérifier le PDL et le PCE insérés par Magic Ink : quand le client a plusieurs logements, Magic Ink peut reprendre le PDL ou le PCE d'un autre compteur que celui concerné par la résiliation.
+                </p>
             </div>
         </div>
 
@@ -127,6 +130,26 @@
                             style="accent-color: var(--primary); width: 18px; height: 18px; border-radius: 4px; cursor: pointer;">
                         <span style="font-size: 0.875rem; font-weight: 500; line-height: 1.4;">Mise en service déjà en cours par un autre fournisseur (résiliation automatique)</span>
                     </label>
+                    <div class="hide" id="group-commissioning-scope"
+                        style="padding-left: 24px; border-left: 2px solid var(--primary); margin-top: 10px; margin-left: 8px;">
+                        <span
+                            style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;">La
+                            mise en service concerne :</span>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                <input type="radio" name="commissioning-scope" value="both" checked style="accent-color: var(--primary); cursor: pointer;">
+                                <span>Les deux énergies</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                <input type="radio" name="commissioning-scope" value="elec" style="accent-color: var(--primary); cursor: pointer;">
+                                <span>Électricité uniquement</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; user-select: none;">
+                                <input type="radio" name="commissioning-scope" value="gaz" style="accent-color: var(--primary); cursor: pointer;">
+                                <span>Gaz uniquement</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Option to keep the other contract active -->

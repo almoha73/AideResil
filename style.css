@@ -795,7 +795,8 @@ body {
 #wrapper-reading-hpb.hide,
 #wrapper-reading-hch.hide,
 #wrapper-reading-hcb.hide,
-#group-gaz-appointment-details.hide {
+#group-gaz-appointment-details.hide,
+#group-commissioning-scope.hide {
     display: none !important;
 }
 

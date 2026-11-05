@@ -1,0 +1,12 @@
+{
+  "name": "easyresil",
+  "private": true,
+  "description": "Générateur interactif de snippets de résiliation",
+  "scripts": {
+    "test": "node tests/scenarios.test.js"
+  },
+  "devDependencies": {
+    "flatpickr": "4.6.13",
+    "jsdom": "24.1.3"
+  }
+}
